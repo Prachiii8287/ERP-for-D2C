@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <meta name="description" content="ERP System" />
+    <title>ERP System</title>
+  </head>
+  <body>
+    <noscript>You need to enable JavaScript to run this app.</noscript>
+    
+    <!-- This is the most important part - React will render here -->
+    <div id="root"></div>
+    
+    <!-- Debug: If you see this text, JavaScript is not loading -->
+    <div id="fallback" style="padding: 20px; color: red; font-family: Arial;">
+      <h1>⚠️ JavaScript Error</h1>
+      <p>If you can see this message, there's a JavaScript error preventing React from loading.</p>
+      <p>Check the browser console (F12) for error messages.</p>
+    </div>
+
+    <script>
+      // Hide fallback message if React loads successfully
+      setTimeout(function() {
+        var root = document.getElementById('root');
+        var fallback = document.getElementById('fallback');
+        if (root && root.children.length > 0 && fallback) {
+          fallback.style.display = 'none';
+        }
+      }, 2000);
+    </script>
+  </body>
+</html>
