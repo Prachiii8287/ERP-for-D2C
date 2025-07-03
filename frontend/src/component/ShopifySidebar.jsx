@@ -59,6 +59,8 @@ const ShopifySidebar = () => {
       navigate('/company-dashboard');
     } else if (user?.role === 'ADMIN') {
       navigate('/admin-dashboard');
+    } else if (user?.role === 'EMPLOYEE') {
+      navigate('/dashboard');
     }
   };
 
