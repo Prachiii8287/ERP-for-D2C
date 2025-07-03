@@ -27,6 +27,7 @@ import random
 from rest_framework.views import APIView
 from django.utils import timezone
 from django.conf import settings
+import logging
 
 def register_company(request):
     if request.method == 'POST':
@@ -410,13 +411,21 @@ class AdminDeleteOTPVerifyView(APIView):
         serializer = AdminDeleteOTPVerifySerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         admin_user_id = serializer.validated_data['admin_user_id']
-        otp = serializer.validated_data['otp']
+        otp = str(serializer.validated_data['otp']).strip()
         owner = request.user
         try:
             otp_obj = AdminDeleteOTP.objects.filter(owner=owner, admin_user_id=admin_user_id, is_used=False).latest('created_at')
         except AdminDeleteOTP.DoesNotExist:
             return Response({'detail': 'OTP not found.'}, status=status.HTTP_400_BAD_REQUEST)
-        if otp_obj.otp != otp:
+        # Use is_expired() method for expiration check
+        if otp_obj.is_expired():
+            return Response({'detail': 'OTP expired.'}, status=status.HTTP_400_BAD_REQUEST)
+        stored_otp = str(otp_obj.otp).strip()
+        # Debug logging
+        logger = logging.getLogger(__name__)
+        logger.debug(f"Comparing provided OTP '{otp}' with stored OTP '{stored_otp}' for admin_user_id={admin_user_id}")
+        if otp != stored_otp:
+            logger.info(f"Invalid OTP for admin_user_id={admin_user_id}")
             return Response({'detail': 'Invalid OTP.'}, status=status.HTTP_400_BAD_REQUEST)
         otp_obj.is_used = True
         otp_obj.save()

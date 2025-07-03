@@ -104,7 +104,14 @@ class AdminDeleteOTPRequestSerializer(serializers.Serializer):
 
 class AdminDeleteOTPVerifySerializer(serializers.Serializer):
     admin_user_id = serializers.UUIDField()
-    otp = serializers.CharField(max_length=6)
+    otp = serializers.CharField(max_length=6, min_length=6)
+
+    def validate_otp(self, value):
+        # Ensure OTP is always a string and trimmed
+        value = str(value).strip()
+        if not value.isdigit() or len(value) != 6:
+            raise serializers.ValidationError("OTP must be a 6-digit number.")
+        return value
 
 class UserDeleteOTPSendSerializer(serializers.Serializer):
     target_user_id = serializers.UUIDField()

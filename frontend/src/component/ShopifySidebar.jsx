@@ -249,7 +249,7 @@ const ShopifySidebar = () => {
             ...styles.navItem,
             ...(isActive('/customers') ? styles.navItemActive : {})
           }}
-          onClick={() => handleNavigation('/customers')}
+          onClick={() => { setActiveItem('/customers'); navigate('/customers'); }}
           onMouseEnter={(e) => {
             if (!isActive('/customers')) {
               Object.assign(e.target.style, styles.navItemHover);

@@ -1,9 +1,165 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Users, Edit, Trash2 } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchEmployees, createEmployee } from '../store/employeeSlice';
+import { fetchEmployees, createEmployee, updateEmployee } from '../store/employeeSlice';
 import { fetchDepartments } from '../store/companySlice';
 import { companyAPI } from '../services/api';
+
+// Modal styles shared by AddEmployeeModal and EditEmployeeModal
+const modalStyles = {
+  backdrop: {
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: '20px',
+    zIndex: 9999,
+    backdropFilter: 'blur(4px)',
+    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+  },
+  modal: {
+    backgroundColor: 'white',
+    borderRadius: '16px',
+    padding: '40px 50px',
+    boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25), 0 8px 16px rgba(0, 0, 0, 0.1)',
+    width: '100%',
+    maxWidth: '650px',
+    maxHeight: '90vh',
+    overflowY: 'auto',
+    scrollBehavior: 'smooth',
+    border: '1px solid #e8ecf0',
+    position: 'relative',
+    animation: 'modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+  },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: '30px'
+  },
+  heading: {
+    color: '#2c3e50',
+    fontSize: '28px',
+    fontWeight: '700',
+    margin: '0',
+    position: 'relative'
+  },
+  headingAccent: {
+    color: '#7E44EE',
+    display: 'inline-block',
+    background: 'linear-gradient(45deg, #7E44EE, #9B59B6)',
+    WebkitBackgroundClip: 'text',
+    WebkitTextFillColor: 'transparent',
+    backgroundClip: 'text'
+  },
+  closeButton: {
+    background: 'none',
+    border: 'none',
+    fontSize: '24px',
+    color: '#64748b',
+    cursor: 'pointer',
+    padding: '8px',
+    borderRadius: '8px',
+    transition: 'all 0.2s ease',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '36px',
+    height: '36px'
+  },
+  closeButtonHover: {
+    backgroundColor: '#f1f5f9',
+    color: '#374151'
+  },
+  form: {
+    display: 'grid',
+    gridTemplateColumns: '1fr 1fr',
+    gap: '24px 28px'
+  },
+  fieldGroup: {
+    display: 'flex',
+    flexDirection: 'column',
+    position: 'relative'
+  },
+  label: {
+    color: '#34495e',
+    fontSize: '14px',
+    fontWeight: '600',
+    marginBottom: '8px',
+    letterSpacing: '0.5px'
+  },
+  inputWrapper: {
+    position: 'relative'
+  },
+  input: {
+    width: '100%',
+    padding: '14px 16px',
+    border: '2px solid #e8ecf0',
+    borderRadius: '10px',
+    fontSize: '15px',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    outline: 'none',
+    backgroundColor: 'white',
+    boxSizing: 'border-box',
+    fontFamily: 'inherit'
+  },
+  inputFocused: {
+    borderColor: '#7E44EE',
+    boxShadow: '0 0 0 3px rgba(126, 68, 238, 0.1)',
+    transform: 'translateY(-1px)'
+  },
+  buttonGroup: {
+    display: 'flex',
+    gap: '12px',
+    gridColumn: '1 / -1',
+    marginTop: '16px'
+  },
+  button: {
+    padding: '14px 28px',
+    border: 'none',
+    borderRadius: '8px',
+    fontSize: '15px',
+    fontWeight: '600',
+    cursor: 'pointer',
+    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+    letterSpacing: '0.3px',
+    flex: 1
+  },
+  primaryButton: {
+    background: 'linear-gradient(135deg, #7E44EE 0%, #8E44AD 100%)',
+    color: 'white',
+    boxShadow: '0 4px 12px rgba(126, 68, 238, 0.2)'
+  },
+  primaryButtonHover: {
+    transform: 'translateY(-2px)',
+    boxShadow: '0 6px 20px rgba(126, 68, 238, 0.3)'
+  },
+  secondaryButton: {
+    background: '#f8fafc',
+    color: '#64748b',
+    border: '2px solid #e2e8f0'
+  },
+  secondaryButtonHover: {
+    backgroundColor: '#f1f5f9',
+    borderColor: '#cbd5e1',
+    color: '#475569'
+  },
+  error: {
+    color: '#ef4444',
+    fontSize: '14px',
+    marginTop: '8px',
+    gridColumn: '1 / -1',
+    padding: '12px',
+    backgroundColor: '#fef2f2',
+    border: '1px solid #fecaca',
+    borderRadius: '6px'
+  }
+};
 
 // Add Employee Modal Component
 const AddEmployeeModal = ({ isOpen, onClose, onEmployeeAdded }) => {
@@ -95,160 +251,7 @@ const AddEmployeeModal = ({ isOpen, onClose, onEmployeeAdded }) => {
 
   if (!isOpen) return null;
 
-  const styles = {
-    backdrop: {
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.5)',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      padding: '20px',
-      zIndex: 9999,
-      backdropFilter: 'blur(4px)',
-      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
-    },
-    modal: {
-      backgroundColor: 'white',
-      borderRadius: '16px',
-      padding: '40px 50px',
-      boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25), 0 8px 16px rgba(0, 0, 0, 0.1)',
-      width: '100%',
-      maxWidth: '650px',
-      maxHeight: '90vh',
-      overflowY: 'auto',
-      scrollBehavior: 'smooth',
-      border: '1px solid #e8ecf0',
-      position: 'relative',
-      animation: 'modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-    },
-    header: {
-      display: 'flex',
-      justifyContent: 'space-between',
-      alignItems: 'center',
-      marginBottom: '30px'
-    },
-    heading: {
-      color: '#2c3e50',
-      fontSize: '28px',
-      fontWeight: '700',
-      margin: '0',
-      position: 'relative'
-    },
-    headingAccent: {
-      color: '#7E44EE',
-      display: 'inline-block',
-      background: 'linear-gradient(45deg, #7E44EE, #9B59B6)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text'
-    },
-    closeButton: {
-      background: 'none',
-      border: 'none',
-      fontSize: '24px',
-      color: '#64748b',
-      cursor: 'pointer',
-      padding: '8px',
-      borderRadius: '8px',
-      transition: 'all 0.2s ease',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: '36px',
-      height: '36px'
-    },
-    closeButtonHover: {
-      backgroundColor: '#f1f5f9',
-      color: '#374151'
-    },
-    form: {
-      display: 'grid',
-      gridTemplateColumns: '1fr 1fr',
-      gap: '24px 28px'
-    },
-    fieldGroup: {
-      display: 'flex',
-      flexDirection: 'column',
-      position: 'relative'
-    },
-    label: {
-      color: '#34495e',
-      fontSize: '14px',
-      fontWeight: '600',
-      marginBottom: '8px',
-      letterSpacing: '0.5px'
-    },
-    inputWrapper: {
-      position: 'relative'
-    },
-    input: {
-      width: '100%',
-      padding: '14px 16px',
-      border: '2px solid #e8ecf0',
-      borderRadius: '10px',
-      fontSize: '15px',
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      outline: 'none',
-      backgroundColor: 'white',
-      boxSizing: 'border-box',
-      fontFamily: 'inherit'
-    },
-    inputFocused: {
-      borderColor: '#7E44EE',
-      boxShadow: '0 0 0 3px rgba(126, 68, 238, 0.1)',
-      transform: 'translateY(-1px)'
-    },
-    buttonGroup: {
-      display: 'flex',
-      gap: '12px',
-      gridColumn: '1 / -1',
-      marginTop: '16px'
-    },
-    button: {
-      padding: '14px 28px',
-      border: 'none',
-      borderRadius: '8px',
-      fontSize: '15px',
-      fontWeight: '600',
-      cursor: 'pointer',
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      letterSpacing: '0.3px',
-      flex: 1
-    },
-    primaryButton: {
-      background: 'linear-gradient(135deg, #7E44EE 0%, #8E44AD 100%)',
-      color: 'white',
-      boxShadow: '0 4px 12px rgba(126, 68, 238, 0.2)'
-    },
-    primaryButtonHover: {
-      transform: 'translateY(-2px)',
-      boxShadow: '0 6px 20px rgba(126, 68, 238, 0.3)'
-    },
-    secondaryButton: {
-      background: '#f8fafc',
-      color: '#64748b',
-      border: '2px solid #e2e8f0'
-    },
-    secondaryButtonHover: {
-      backgroundColor: '#f1f5f9',
-      borderColor: '#cbd5e1',
-      color: '#475569'
-    },
-    error: {
-      color: '#ef4444',
-      fontSize: '14px',
-      marginTop: '8px',
-      gridColumn: '1 / -1',
-      padding: '12px',
-      backgroundColor: '#fef2f2',
-      border: '1px solid #fecaca',
-      borderRadius: '6px'
-    }
-  };
+  const styles = modalStyles;
 
   return (
     <div 
@@ -520,6 +523,129 @@ const AddEmployeeModal = ({ isOpen, onClose, onEmployeeAdded }) => {
   );
 };
 
+const EditEmployeeModal = ({ isOpen, onClose, employee, departments, onEmployeeUpdated }) => {
+  const dispatch = useDispatch();
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    department: '',
+    phoneNumber: '',
+    role: '',
+    email: '',
+    is_active: true
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (isOpen && employee) {
+      setFormData({
+        firstName: employee.user?.first_name || '',
+        lastName: employee.user?.last_name || '',
+        department: employee.department || '',
+        phoneNumber: employee.user?.phone || '',
+        role: employee.role || '',
+        email: employee.user?.email || '',
+        is_active: employee.is_active
+      });
+      setError('');
+    }
+  }, [isOpen, employee]);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError('');
+    try {
+      await dispatch(updateEmployee({
+        employeeId: employee.id,
+        data: {
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          department: formData.department,
+          phone: formData.phoneNumber,
+          role: formData.role,
+          email: formData.email,
+          is_active: formData.is_active
+        }
+      })).unwrap();
+      if (onEmployeeUpdated) onEmployeeUpdated();
+      onClose();
+    } catch (err) {
+      setError(err?.message || 'Failed to update employee');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isOpen || !employee) return null;
+
+  const styles = modalStyles;
+
+  return (
+    <div style={styles.backdrop}>
+      <div style={styles.modal}>
+        <div style={styles.header}>
+          <h1 style={styles.heading}><span style={styles.headingAccent}>Edit Employee</span></h1>
+          <button type="button" onClick={onClose} style={styles.closeButton}>✕</button>
+        </div>
+        <form onSubmit={handleSubmit} style={styles.form}>
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>First Name</label>
+            <input type="text" name="firstName" value={formData.firstName} onChange={handleChange} style={styles.input} required placeholder="Enter first name" />
+          </div>
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>Last Name</label>
+            <input type="text" name="lastName" value={formData.lastName} onChange={handleChange} style={styles.input} required placeholder="Enter last name" />
+          </div>
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>Department</label>
+            <select name="department" value={formData.department} onChange={handleChange} style={styles.input} required>
+              <option value="">Select department</option>
+              {departments.map((dept) => (
+                <option key={dept.id} value={dept.id}>{dept.name}</option>
+              ))}
+            </select>
+          </div>
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>Phone Number</label>
+            <input type="text" name="phoneNumber" value={formData.phoneNumber} onChange={handleChange} style={styles.input} placeholder="Enter phone number" />
+          </div>
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>Role</label>
+            <input type="text" name="role" value={formData.role} onChange={handleChange} style={styles.input} required placeholder="Enter role/position" />
+          </div>
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>Email Address</label>
+            <input type="email" name="email" value={formData.email} onChange={handleChange} style={styles.input} required placeholder="Enter email address" />
+          </div>
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>Employee ID</label>
+            <input type="text" value={employee.employee_id} style={styles.input} readOnly />
+          </div>
+          <div style={styles.fieldGroup}>
+            <label style={styles.label}>Active</label>
+            <input type="checkbox" name="is_active" checked={formData.is_active} onChange={handleChange} />
+          </div>
+          {error && <div style={styles.error}>{error}</div>}
+          <div style={styles.buttonGroup}>
+            <button type="button" onClick={onClose} style={{...styles.button, ...styles.secondaryButton}}>Cancel</button>
+            <button type="submit" disabled={loading} style={{...styles.button, ...styles.primaryButton}}>{loading ? 'Saving...' : 'Save Changes'}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
+
 // Updated Employees Page Component
 const EmployeesPage = () => {
   const dispatch = useDispatch();
@@ -530,6 +656,9 @@ const EmployeesPage = () => {
   const [otp, setOtp] = useState('');
   const [otpStatus, setOtpStatus] = useState('');
   const [otpError, setOtpError] = useState('');
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editEmployee, setEditEmployee] = useState(null);
+  const { departments } = useSelector((state) => state.company);
 
   useEffect(() => {
     dispatch(fetchEmployees());
@@ -542,19 +671,25 @@ const EmployeesPage = () => {
   };
 
   const handleEditEmployee = (employee) => {
-    // TODO: Implement edit functionality
-    console.log('Edit employee:', employee);
-    // You can add edit modal or navigate to edit page
+    setEditEmployee(employee);
+    setShowEditModal(true);
   };
 
   const handleDeleteEmployee = async (employee) => {
-    setDeleteEmployeeId(employee.user?.id);
+    // Always use the related User's ID for OTP deletion
+    const userId = employee.user && employee.user.id ? employee.user.id : null;
+    console.log('Deleting employee, userId for OTP:', userId, 'employee:', employee);
+    if (!userId) {
+      setOtpError('Invalid employee user ID.');
+      return;
+    }
+    setDeleteEmployeeId(userId);
     setShowDeleteModal(true);
     setOtp('');
     setOtpStatus('');
     setOtpError('');
     try {
-      await companyAPI.sendUserDeleteOTP(employee.user?.id);
+      await companyAPI.sendUserDeleteOTP(userId);
       setOtpStatus('OTP sent successfully. Please check your email.');
     } catch (err) {
       setOtpStatus('');
@@ -570,8 +705,8 @@ const EmployeesPage = () => {
       setDeleteEmployeeId(null);
       setOtp('');
       setOtpStatus('');
-      // Optionally refresh employee list here
-      window.location.reload();
+      // Refresh employee list here instead of reloading the page
+      dispatch(fetchEmployees());
     } catch (err) {
       setOtpError(err?.response?.data?.detail || 'Invalid OTP');
     }
@@ -821,6 +956,16 @@ const EmployeesPage = () => {
           onClose={() => setShowAddModal(false)}
           onEmployeeAdded={handleEmployeeAdded}
         />
+
+        {showEditModal && (
+          <EditEmployeeModal
+            isOpen={showEditModal}
+            onClose={() => setShowEditModal(false)}
+            employee={editEmployee}
+            departments={departments}
+            onEmployeeUpdated={() => dispatch(fetchEmployees())}
+          />
+        )}
       </div>
 
       {/* OTP Delete Modal - match AdminUsersPage style and structure */}

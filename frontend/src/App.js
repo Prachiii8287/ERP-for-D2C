@@ -19,6 +19,7 @@ import EmployeesPage from './component/EmployeesPage';
 import AddEmployee from './component/AddEmployeeForm';
 import Departments from './component/Departments';
 import ShopifyDashboard from './component/ShopifyDashboard';
+import CustomerPage from './component/CustomerPage';
 // import ProjectsPage from './component/ProjectsPage';
 // import TimesheetsPage from './component/TimesheetsPage';
 
@@ -93,6 +94,7 @@ function AppContent() {
           {/* Admin/Employee Routes */}
           <Route path="admin-dashboard" element={<AdminDashboard />} />
           <Route path="dashboard" element={<EmployeeDashboard />} />
+          <Route path="customers" element={<CustomerPage />} />
         </Route>
 
 
