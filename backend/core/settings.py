@@ -172,8 +172,10 @@ EMAIL_HOST = 'smtp.sendgrid.net'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'apikey'  # This is the literal string 'apikey', not your username
-EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY', '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')
-DEFAULT_FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL', 'pracchi0510@gmail.com')
+# EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY', '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')
+# DEFAULT_FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL', 'pracchi0510@gmail.com')
+EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY', 'your_api_key')
+DEFAULT_FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL', 'your_email')
 
 # Sites Framework
 SITE_ID = 1
