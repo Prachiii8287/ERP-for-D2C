@@ -26,6 +26,7 @@ from django.core.mail import send_mail
 import random
 from rest_framework.views import APIView
 from django.utils import timezone
+from django.conf import settings
 
 def register_company(request):
     if request.method == 'POST':
@@ -392,14 +393,14 @@ class AdminDeleteOTPSendView(APIView):
         serializer = AdminDeleteOTPRequestSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         admin_user_id = serializer.validated_data['admin_user_id']
-        owner = request.user
+        user = request.user  # The person performing the action
         otp = f"{random.randint(100000, 999999)}"
-        AdminDeleteOTP.objects.create(owner=owner, otp=otp, admin_user_id=admin_user_id)
+        AdminDeleteOTP.objects.create(owner=user, otp=otp, admin_user_id=admin_user_id)
         send_mail(
             'Your OTP for Admin Deletion',
             f'Your OTP is: {otp}',
-            'noreply@yourdomain.com',
-            [owner.email],
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],  # Send to the person performing the action
             fail_silently=False,
         )
         return Response({'detail': 'OTP sent successfully.'}, status=status.HTTP_200_OK)
@@ -433,21 +434,21 @@ class UserDeleteOTPSendView(APIView):
         serializer = UserDeleteOTPSendSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         target_user_id = serializer.validated_data['target_user_id']
-        owner = request.user
+        user = request.user  # The person performing the action
 
-        # Rate limit: 1 OTP per minute per owner/target
-        last_otp = UserDeleteOTP.objects.filter(owner=owner, target_user_id=target_user_id).order_by('-created_at').first()
+        # Rate limit: 1 OTP per minute per user/target
+        last_otp = UserDeleteOTP.objects.filter(owner=user, target_user_id=target_user_id).order_by('-created_at').first()
         if last_otp and (timezone.now() - last_otp.created_at).total_seconds() < 60:
             return Response({'detail': 'You can only request an OTP once per minute.'}, status=status.HTTP_429_TOO_MANY_REQUESTS)
 
         otp = f"{random.randint(100000, 999999)}"
-        UserDeleteOTP.objects.create(owner=owner, otp=otp, target_user_id=target_user_id)
+        UserDeleteOTP.objects.create(owner=user, otp=otp, target_user_id=target_user_id)
 
         send_mail(
             'Your OTP for deleting a user',
             f'Your OTP for deleting a user is: {otp}',
-            'prachiii0501@gmail.com',
-            [owner.email],
+            settings.DEFAULT_FROM_EMAIL,
+            [user.email],  # Send to the person performing the action
             fail_silently=False,
         )
         return Response({'detail': 'OTP sent successfully.'}, status=status.HTTP_200_OK)

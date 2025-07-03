@@ -1,6 +1,9 @@
 import os
 from pathlib import Path
 import pymysql
+# Enable .env support
+from dotenv import load_dotenv
+load_dotenv()
 
 # Use PyMySQL as MySQLdb replacement
 pymysql.install_as_MySQLdb()
@@ -163,8 +166,14 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 # LOGOUT_REDIRECT_URL = 'accounts:account_login'
 # LOGIN_URL = 'accounts:account_login'
 
-# Email settings - simplified for debugging
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# Email settings for SendGrid SMTP
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.sendgrid.net'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'apikey'  # This is the literal string 'apikey', not your username
+EMAIL_HOST_PASSWORD = os.getenv('SENDGRID_API_KEY', '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')
+DEFAULT_FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL', 'pracchi0510@gmail.com')
 
 # Sites Framework
 SITE_ID = 1
@@ -182,13 +191,13 @@ if not DEBUG:
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
     SECURE_HSTS_PRELOAD = True
-    EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-    EMAIL_HOST = 'smtp.gmail.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = 'prachiii0501@gmail.com'
-    EMAIL_HOST_PASSWORD = 'Prachi@123'  # Replace with your Gmail App Password
-    DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+    # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+    # EMAIL_HOST = 'smtp.gmail.com'
+    # EMAIL_PORT = 587
+    # EMAIL_USE_TLS = True
+    # EMAIL_HOST_USER = 'prachiii0501@gmail.com'
+    # EMAIL_HOST_PASSWORD = 'Prachi@123'  # Replace with your Gmail App Password
+    # DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # CORS settings
 CORS_ALLOWED_ORIGINS = [

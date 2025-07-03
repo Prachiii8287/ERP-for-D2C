@@ -81,6 +81,9 @@ class AdminDeleteOTP(models.Model):
     is_used = models.BooleanField(default=False)
     admin_user_id = models.UUIDField()
 
+    def is_expired(self):
+        return timezone.now() > self.created_at + timezone.timedelta(minutes=10)
+
     def __str__(self):
         return f"OTP for {self.owner.email} - {self.otp}"
 

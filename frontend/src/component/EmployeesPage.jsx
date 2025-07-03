@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchEmployees, createEmployee } from '../store/employeeSlice';
 import { fetchDepartments } from '../store/companySlice';
 import { companyAPI } from '../services/api';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 // Add Employee Modal Component
 const AddEmployeeModal = ({ isOpen, onClose, onEmployeeAdded }) => {
@@ -712,123 +713,148 @@ const EmployeesPage = () => {
   }
 
   return (
-    <div style={styles.container}>
-      <div style={styles.header}>
-        <h1 style={styles.title}>Employees ({employees.length})</h1>
-        <button 
-          style={styles.addButton} 
-          onClick={() => setShowAddModal(true)}
-          onMouseEnter={(e) => {
-            Object.assign(e.target.style, styles.addButtonHover);
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.backgroundColor = '#7E44EE';
-            e.target.style.transform = 'none';
-            e.target.style.boxShadow = 'none';
-          }}
-        >
-          <Plus size={20} /> Add Employee
-        </button>
-      </div>
-      
-      <div style={styles.card}>
-        {employees.length === 0 ? (
-          <div style={styles.emptyState}>
-            <div style={styles.emptyStateIcon}>
-              <Users size={48} />
+    <>
+      <div style={styles.container}>
+        <div style={styles.header}>
+          <h1 style={styles.title}>Employees ({employees.length})</h1>
+          <button 
+            style={styles.addButton} 
+            onClick={() => setShowAddModal(true)}
+            onMouseEnter={(e) => {
+              Object.assign(e.target.style, styles.addButtonHover);
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.backgroundColor = '#7E44EE';
+              e.target.style.transform = 'none';
+              e.target.style.boxShadow = 'none';
+            }}
+          >
+            <Plus size={20} /> Add Employee
+          </button>
+        </div>
+        
+        <div style={styles.card}>
+          {employees.length === 0 ? (
+            <div style={styles.emptyState}>
+              <div style={styles.emptyStateIcon}>
+                <Users size={48} />
+              </div>
+              <h3>No employees yet</h3>
+              <p>Click "Add Employee" to get started</p>
             </div>
-            <h3>No employees yet</h3>
-            <p>Click "Add Employee" to get started</p>
-          </div>
-        ) : (
-          <table style={styles.table}>
-            <thead>
-              <tr>
-                <th style={styles.th}>Name</th>
-                <th style={styles.th}>Department</th>
-                <th style={styles.th}>Role</th>
-                <th style={styles.th}>Email</th>
-                <th style={styles.th}>Phone</th>
-                <th style={styles.th}>Status</th>
-                <th style={styles.th}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {employees.map((emp) => (
-                <tr key={emp.id}>
-                  <td style={styles.td}>
-                    {emp.user?.first_name} {emp.user?.last_name}
-                  </td>
-                  <td style={styles.td}>{emp.department_name}</td>
-                  <td style={styles.td}>{emp.role}</td>
-                  <td style={styles.td}>{emp.user?.email}</td>
-                  <td style={styles.td}>{emp.phone || 'N/A'}</td>
-                  <td style={styles.td}>
-                    <span 
-                      style={{
-                        ...styles.statusBadge,
-                        ...(emp.is_active ? styles.statusActive : styles.statusInactive)
-                      }}
-                    >
-                      {emp.is_active ? 'Active' : 'Inactive'}
-                    </span>
-                  </td>
-                  <td style={styles.td}>
-                    <div style={styles.actionsCell}>
-                      <button
-                        style={{...styles.actionButton, ...styles.editButton}}
-                        onClick={() => handleEditEmployee(emp)}
-                        onMouseEnter={(e) => {
-                          Object.assign(e.target.style, styles.editButtonHover);
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.backgroundColor = '#e0f2fe';
-                          e.target.style.transform = 'none';
-                          e.target.style.boxShadow = 'none';
-                        }}
-                        title="Edit Employee"
-                      >
-                        <Edit size={16} />
-                      </button>
-                      <button
-                        style={{...styles.actionButton, ...styles.deleteButton}}
-                        onClick={() => handleDeleteEmployee(emp)}
-                        onMouseEnter={(e) => {
-                          Object.assign(e.target.style, styles.deleteButtonHover);
-                        }}
-                        onMouseLeave={(e) => {
-                          e.target.style.backgroundColor = '#fee2e2';
-                          e.target.style.transform = 'none';
-                          e.target.style.boxShadow = 'none';
-                        }}
-                        title="Delete Employee"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  </td>
+          ) : (
+            <table style={styles.table}>
+              <thead>
+                <tr>
+                  <th style={styles.th}>Name</th>
+                  <th style={styles.th}>Department</th>
+                  <th style={styles.th}>Role</th>
+                  <th style={styles.th}>Email</th>
+                  <th style={styles.th}>Phone</th>
+                  <th style={styles.th}>Status</th>
+                  <th style={styles.th}>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {employees.map((emp) => (
+                  <tr key={emp.id}>
+                    <td style={styles.td}>
+                      {emp.user?.first_name} {emp.user?.last_name}
+                    </td>
+                    <td style={styles.td}>{emp.department_name}</td>
+                    <td style={styles.td}>{emp.role}</td>
+                    <td style={styles.td}>{emp.user?.email}</td>
+                    <td style={styles.td}>{emp.phone || 'N/A'}</td>
+                    <td style={styles.td}>
+                      <span 
+                        style={{
+                          ...styles.statusBadge,
+                          ...(emp.is_active ? styles.statusActive : styles.statusInactive)
+                        }}
+                      >
+                        {emp.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td style={styles.td}>
+                      <div style={styles.actionsCell}>
+                        <button
+                          style={{...styles.actionButton, ...styles.editButton}}
+                          onClick={() => handleEditEmployee(emp)}
+                          onMouseEnter={(e) => {
+                            Object.assign(e.target.style, styles.editButtonHover);
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.backgroundColor = '#e0f2fe';
+                            e.target.style.transform = 'none';
+                            e.target.style.boxShadow = 'none';
+                          }}
+                          title="Edit Employee"
+                        >
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          style={{...styles.actionButton, ...styles.deleteButton}}
+                          onClick={() => handleDeleteEmployee(emp)}
+                          onMouseEnter={(e) => {
+                            Object.assign(e.target.style, styles.deleteButtonHover);
+                          }}
+                          onMouseLeave={(e) => {
+                            e.target.style.backgroundColor = '#fee2e2';
+                            e.target.style.transform = 'none';
+                            e.target.style.boxShadow = 'none';
+                          }}
+                          title="Delete Employee"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+
+        {/* Add Employee Modal */}
+        <AddEmployeeModal 
+          isOpen={showAddModal}
+          onClose={() => setShowAddModal(false)}
+          onEmployeeAdded={handleEmployeeAdded}
+        />
       </div>
 
-      {/* Add Employee Modal */}
-      <AddEmployeeModal 
-        isOpen={showAddModal}
-        onClose={() => setShowAddModal(false)}
-        onEmployeeAdded={handleEmployeeAdded}
-      />
-
-      {/* OTP Delete Modal */}
+      {/* OTP Delete Modal - match AdminUsersPage style and structure */}
       {showDeleteModal && (
-        <div className="modal-backdrop">
-          <div className="modal">
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100vw',
+          height: '100vh',
+          background: 'rgba(0,0,0,0.18)',
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }} onClick={() => setShowDeleteModal(false)}>
+          <div style={{
+            background: '#fff',
+            borderRadius: 18,
+            boxShadow: '0 8px 32px rgba(126, 68, 238, 0.10), 0 1.5px 6px rgba(0,0,0,0.07)',
+            width: '100%',
+            maxWidth: 480,
+            padding: '2.5rem 2rem 2rem 2rem',
+            textAlign: 'center',
+            animation: 'modalFadeIn 0.2s',
+            position: 'relative',
+          }} onClick={e => e.stopPropagation()}>
             <div style={{ textAlign: 'center', marginBottom: 16 }}>
               <span style={{ fontSize: 32, color: '#f59e0b' }}>⚠️</span>
-              <h2>Confirm Employee Deletion</h2>
-              <p>Deleting this employee is irreversible. Please enter the OTP sent to the company owner to continue.</p>
+              <h2 style={{ fontWeight: 700, fontSize: '1.5rem', margin: '12px 0 0 0' }}>Confirm Employee Deletion</h2>
+              <p style={{ color: '#444', margin: '8px 0 0 0' }}>
+                Deleting this employee is irreversible. Please enter the OTP sent to the company owner to continue.
+              </p>
               {otpStatus && <div style={{ background: '#e6fbe6', color: '#228B22', padding: 8, borderRadius: 4, margin: 8 }}>{otpStatus}</div>}
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 8 }}>
@@ -839,16 +865,16 @@ const EmployeesPage = () => {
                 }} style={{ width: 40, height: 40, fontSize: 24, textAlign: 'center', border: '1px solid #ccc', borderRadius: 6 }} />
               ))}
             </div>
-            <div style={{ color: '#888', fontSize: 12, marginBottom: 8 }}>Check your email for the OTP.</div>
+            <div style={{ color: '#888', fontSize: 12, marginBottom: 8 }}>For demo: use "123456"</div>
             {otpError && <div style={{ color: 'red', marginBottom: 8 }}>{otpError}</div>}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
               <button onClick={() => setShowDeleteModal(false)} style={{ padding: '10px 20px', borderRadius: 6, border: '1px solid #ccc', background: '#fff' }}>Cancel</button>
               <button onClick={handleVerifyDelete} style={{ padding: '10px 20px', borderRadius: 6, background: '#7E44EE', color: '#fff', border: 'none' }} disabled={otp.length !== 6}>Confirm Deletion</button>
             </div>
           </div>
         </div>
       )}
-    </div>
+    </>
   );
 };
 
