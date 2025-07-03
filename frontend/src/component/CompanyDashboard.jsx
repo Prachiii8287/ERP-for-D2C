@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Building2, MapPin, Edit, Shield, Users, BarChart3, UserPlus, UserCog, Settings, X, Eye, EyeOff } from 'lucide-react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { fetchCompanyProfile, fetchAdminUsers, createAdminUser } from '../store/companySlice';
+import { fetchCompanyProfile, fetchAdminUsers, createAdminUser, updateCompanyProfile } from '../store/companySlice';
 import { fetchEmployees, createEmployee } from '../store/employeeSlice';
 import { fetchDepartments } from '../store/companySlice';
 
@@ -43,6 +43,21 @@ const CompanyDashboard = () => {
   });
   const [employeeLoading, setEmployeeLoading] = useState(false);
   const [employeeError, setEmployeeError] = useState('');
+  const [showCompanyModal, setShowCompanyModal] = useState(false);
+  const [companyForm, setCompanyForm] = useState({
+    name: '',
+    registration_number: '',
+    website: '',
+    phone: '',
+    address: '',
+    city: '',
+    state: '',
+    postal_code: '',
+    country: '',
+    industry: ''
+  });
+  const [companyModalLoading, setCompanyModalLoading] = useState(false);
+  const [companyModalError, setCompanyModalError] = useState('');
 
   useEffect(() => {
     // Only fetch data if user is authenticated and is a parent user
@@ -427,7 +442,44 @@ const CompanyDashboard = () => {
   };
 
   const handleUpdateSettings = () => {
-    navigate('/company/settings');
+    setCompanyForm({
+      name: companyData.name || '',
+      registration_number: companyData.registration_number || '',
+      website: companyData.website || '',
+      phone: companyData.phone || '',
+      address: companyData.address || '',
+      city: companyData.city || '',
+      state: companyData.state || '',
+      postal_code: companyData.postal_code || '',
+      country: companyData.country || '',
+      industry: companyData.industry || ''
+    });
+    setCompanyModalError('');
+    setShowCompanyModal(true);
+  };
+
+  const handleCloseCompanyModal = () => {
+    setShowCompanyModal(false);
+    setCompanyModalError('');
+  };
+
+  const handleCompanyFormChange = (e) => {
+    const { name, value } = e.target;
+    setCompanyForm(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCompanyFormSubmit = async (e) => {
+    e.preventDefault();
+    setCompanyModalLoading(true);
+    setCompanyModalError('');
+    try {
+      await dispatch(updateCompanyProfile({ companyId: companyData.id, data: companyForm })).unwrap();
+      setShowCompanyModal(false);
+    } catch (err) {
+      setCompanyModalError(err?.message || 'Failed to update company');
+    } finally {
+      setCompanyModalLoading(false);
+    }
   };
 
   const handleManageAdmins = () => {
@@ -759,6 +811,65 @@ const CompanyDashboard = () => {
               <div style={{ display: 'flex', gap: '12px', gridColumn: '1 / -1', marginTop: '16px' }}>
                 <button type="button" style={{ background: '#f8fafc', color: '#64748b', border: '2px solid #e2e8f0', padding: '14px 28px', borderRadius: '8px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', letterSpacing: '0.3px', flex: 1 }} onClick={handleCloseEmployeeModal}>Cancel</button>
                 <button type="submit" style={{ background: 'linear-gradient(135deg, #7E44EE 0%, #8E44AD 100%)', color: 'white', boxShadow: '0 4px 12px rgba(126, 68, 238, 0.2)', padding: '14px 28px', border: 'none', borderRadius: '8px', fontSize: '15px', fontWeight: '600', cursor: 'pointer', transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)', letterSpacing: '0.3px', flex: 1 }} disabled={employeeLoading}>{employeeLoading ? 'Saving...' : 'Save Employee'}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Update Company Settings Modal */}
+      {showCompanyModal && (
+        <div style={modalStyles.modalOverlay} onClick={handleCloseCompanyModal}>
+          <div style={modalStyles.modal} onClick={e => e.stopPropagation()}>
+            <div style={modalStyles.modalHeader}>
+              <h2 style={modalStyles.modalTitle}>Update Company Settings</h2>
+              <button style={modalStyles.closeButton} onClick={handleCloseCompanyModal}><X size={24} /></button>
+            </div>
+            <form onSubmit={handleCompanyFormSubmit}>
+              {companyModalError && <div style={{ color: 'red', marginBottom: 12 }}>{companyModalError}</div>}
+              <div style={modalStyles.formGroup}>
+                <label style={modalStyles.label}>Company Name</label>
+                <input type="text" name="name" value={companyForm.name} onChange={handleCompanyFormChange} style={modalStyles.input} required />
+              </div>
+              <div style={modalStyles.formGroup}>
+                <label style={modalStyles.label}>Registration Number</label>
+                <input type="text" name="registration_number" value={companyForm.registration_number} onChange={handleCompanyFormChange} style={modalStyles.input} />
+              </div>
+              <div style={modalStyles.formGroup}>
+                <label style={modalStyles.label}>Website</label>
+                <input type="text" name="website" value={companyForm.website} onChange={handleCompanyFormChange} style={modalStyles.input} />
+              </div>
+              <div style={modalStyles.formGroup}>
+                <label style={modalStyles.label}>Phone</label>
+                <input type="text" name="phone" value={companyForm.phone} onChange={handleCompanyFormChange} style={modalStyles.input} />
+              </div>
+              <div style={modalStyles.formGroup}>
+                <label style={modalStyles.label}>Address</label>
+                <input type="text" name="address" value={companyForm.address} onChange={handleCompanyFormChange} style={modalStyles.input} />
+              </div>
+              <div style={modalStyles.formGroup}>
+                <label style={modalStyles.label}>City</label>
+                <input type="text" name="city" value={companyForm.city} onChange={handleCompanyFormChange} style={modalStyles.input} />
+              </div>
+              <div style={modalStyles.formGroup}>
+                <label style={modalStyles.label}>State</label>
+                <input type="text" name="state" value={companyForm.state} onChange={handleCompanyFormChange} style={modalStyles.input} />
+              </div>
+              <div style={modalStyles.formGroup}>
+                <label style={modalStyles.label}>Postal Code</label>
+                <input type="text" name="postal_code" value={companyForm.postal_code} onChange={handleCompanyFormChange} style={modalStyles.input} />
+              </div>
+              <div style={modalStyles.formGroup}>
+                <label style={modalStyles.label}>Country</label>
+                <input type="text" name="country" value={companyForm.country} onChange={handleCompanyFormChange} style={modalStyles.input} />
+              </div>
+              <div style={modalStyles.formGroup}>
+                <label style={modalStyles.label}>Industry</label>
+                <input type="text" name="industry" value={companyForm.industry} onChange={handleCompanyFormChange} style={modalStyles.input} />
+              </div>
+              <div style={modalStyles.modalActions}>
+                <button type="button" style={modalStyles.cancelButton} onClick={handleCloseCompanyModal}>Cancel</button>
+                <button type="submit" style={modalStyles.saveButton} disabled={companyModalLoading}>{companyModalLoading ? 'Saving...' : 'Save Changes'}</button>
               </div>
             </form>
           </div>

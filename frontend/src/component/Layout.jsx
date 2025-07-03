@@ -3,7 +3,7 @@ import React from 'react';
 import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../store/authSlice';
-import { Home, Users, Building2, Settings, LogOut, User, Shield, Clock, FolderOpen } from 'lucide-react';
+import { Home, Users, Building2, Settings, LogOut, User, Shield, Clock, FolderOpen, BarChart3 } from 'lucide-react';
 import Logo from './Logo.png';
 
 const Layout = () => {
@@ -139,8 +139,9 @@ const Layout = () => {
   // Navigation items based on user role
   const getNavigationItems = () => {
     const home = { path: '/shopify-dashboard', label: 'Home', icon: Home };
+    const dashboard = { path: '/dashboard', label: 'Dashboard', icon: BarChart3 };
     const commonItems = [
-      { path: '/dashboard', label: 'Dashboard', icon: Home }
+      dashboard
     ];
 
     if (user?.role === 'PARENT') {
@@ -157,7 +158,7 @@ const Layout = () => {
     } else if (user?.role === 'ADMIN') {
       return [
         home,
-        { path: '/dashboard', label: 'Dashboard', icon: Home },
+        dashboard,
         { path: '/employees', label: 'Employees', icon: Users },
         // { path: '/timesheet', label: 'Timesheet', icon: Clock },
         { path: '/departments', label: 'Departments', icon: Building2 },
@@ -166,7 +167,7 @@ const Layout = () => {
     } else {
       return [
         home,
-        { path: '/dashboard', label: 'Dashboard', icon: Home }
+        dashboard
       ];
     }
   };

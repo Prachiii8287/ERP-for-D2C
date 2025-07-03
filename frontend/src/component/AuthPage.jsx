@@ -5,12 +5,13 @@ import { login, register, clearError } from '../store/authSlice';
 import Logo from './Logo.png';
 
 const INDUSTRY_CHOICES = [
-    { value: 'IT', label: 'Information Technology' },
-    { value: 'FINANCE', label: 'Finance' },
-    { value: 'HEALTHCARE', label: 'Healthcare' },
-    { value: 'EDUCATION', label: 'Education' },
-    { value: 'RETAIL', label: 'Retail' },
-    { value: 'MANUFACTURING', label: 'Manufacturing' },
+    { value: 'FASHION', label: 'Fashion & Apparel' },
+    { value: 'HEALTH_WELLNESS', label: 'Health & Wellness' },
+    { value: 'BEAUTY', label: 'Beauty & Personal Care' },
+    { value: 'FOOD_BEVERAGES', label: 'Food & Beverages' },
+    { value: 'HOME_LIVING', label: 'Home & Living' },
+    { value: 'BABY_KIDS', label: 'Baby & Kids Products' },
+    { value: 'ELECTRONICS', label: 'Electronics & Accessories' },
     { value: 'OTHER', label: 'Other' }
 ];
 
@@ -708,14 +709,13 @@ export default function AuthPage() {
                                             </div>
                                             <div style={{ display: 'flex', gap: '1rem', marginBottom: '16px' }}>
                                                 <div style={{ flex: 1 }}>
-                                                    <label style={styles.label} htmlFor="industry">Industry *</label>
+                                                    <label style={styles.label} htmlFor="industry">Industry</label>
                                                     <select
                                                         id="industry"
                                                         name="industry"
                                                         value={formData.industry}
                                                         onChange={handleInputChange}
                                                         style={styles.input}
-                                                        required
                                                     >
                                                         {INDUSTRY_CHOICES.map(choice => (
                                                             <option key={choice.value} value={choice.value}>
