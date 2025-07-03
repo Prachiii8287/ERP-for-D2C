@@ -4,7 +4,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchEmployees, createEmployee } from '../store/employeeSlice';
 import { fetchDepartments } from '../store/companySlice';
 import { companyAPI } from '../services/api';
-import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 // Add Employee Modal Component
 const AddEmployeeModal = ({ isOpen, onClose, onEmployeeAdded }) => {
