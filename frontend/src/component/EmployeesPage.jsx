@@ -7,159 +7,159 @@ import { companyAPI } from '../services/api';
 
 // Modal styles shared by AddEmployeeModal and EditEmployeeModal
 const modalStyles = {
-  backdrop: {
-    position: 'fixed',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: '20px',
-    zIndex: 9999,
-    backdropFilter: 'blur(4px)',
-    fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
-  },
-  modal: {
-    backgroundColor: 'white',
-    borderRadius: '16px',
-    padding: '40px 50px',
-    boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25), 0 8px 16px rgba(0, 0, 0, 0.1)',
-    width: '100%',
-    maxWidth: '650px',
-    maxHeight: '90vh',
-    overflowY: 'auto',
-    scrollBehavior: 'smooth',
-    border: '1px solid #e8ecf0',
-    position: 'relative',
-    animation: 'modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: '30px'
-  },
-  heading: {
-    color: '#2c3e50',
-    fontSize: '28px',
-    fontWeight: '700',
-    margin: '0',
-    position: 'relative'
-  },
-  headingAccent: {
-    color: '#7E44EE',
-    display: 'inline-block',
-    background: 'linear-gradient(45deg, #7E44EE, #9B59B6)',
-    WebkitBackgroundClip: 'text',
-    WebkitTextFillColor: 'transparent',
-    backgroundClip: 'text'
-  },
-  closeButton: {
-    background: 'none',
-    border: 'none',
-    fontSize: '24px',
-    color: '#64748b',
-    cursor: 'pointer',
-    padding: '8px',
-    borderRadius: '8px',
-    transition: 'all 0.2s ease',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '36px',
-    height: '36px'
-  },
-  closeButtonHover: {
-    backgroundColor: '#f1f5f9',
-    color: '#374151'
-  },
-  form: {
-    display: 'grid',
-    gridTemplateColumns: '1fr 1fr',
-    gap: '24px 28px'
-  },
-  fieldGroup: {
-    display: 'flex',
-    flexDirection: 'column',
-    position: 'relative'
-  },
-  label: {
-    color: '#34495e',
-    fontSize: '14px',
-    fontWeight: '600',
-    marginBottom: '8px',
-    letterSpacing: '0.5px'
-  },
-  inputWrapper: {
-    position: 'relative'
-  },
-  input: {
-    width: '100%',
-    padding: '14px 16px',
-    border: '2px solid #e8ecf0',
-    borderRadius: '10px',
-    fontSize: '15px',
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    outline: 'none',
-    backgroundColor: 'white',
-    boxSizing: 'border-box',
-    fontFamily: 'inherit'
-  },
-  inputFocused: {
-    borderColor: '#7E44EE',
-    boxShadow: '0 0 0 3px rgba(126, 68, 238, 0.1)',
-    transform: 'translateY(-1px)'
-  },
-  buttonGroup: {
-    display: 'flex',
-    gap: '12px',
-    gridColumn: '1 / -1',
-    marginTop: '16px'
-  },
-  button: {
-    padding: '14px 28px',
-    border: 'none',
-    borderRadius: '8px',
-    fontSize: '15px',
-    fontWeight: '600',
-    cursor: 'pointer',
-    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-    letterSpacing: '0.3px',
-    flex: 1
-  },
-  primaryButton: {
-    background: 'linear-gradient(135deg, #7E44EE 0%, #8E44AD 100%)',
-    color: 'white',
-    boxShadow: '0 4px 12px rgba(126, 68, 238, 0.2)'
-  },
-  primaryButtonHover: {
-    transform: 'translateY(-2px)',
-    boxShadow: '0 6px 20px rgba(126, 68, 238, 0.3)'
-  },
-  secondaryButton: {
-    background: '#f8fafc',
-    color: '#64748b',
-    border: '2px solid #e2e8f0'
-  },
-  secondaryButtonHover: {
-    backgroundColor: '#f1f5f9',
-    borderColor: '#cbd5e1',
-    color: '#475569'
-  },
-  error: {
-    color: '#ef4444',
-    fontSize: '14px',
-    marginTop: '8px',
-    gridColumn: '1 / -1',
-    padding: '12px',
-    backgroundColor: '#fef2f2',
-    border: '1px solid #fecaca',
-    borderRadius: '6px'
-  }
-};
+    backdrop: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      backgroundColor: 'rgba(0, 0, 0, 0.5)',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: '20px',
+      zIndex: 9999,
+      backdropFilter: 'blur(4px)',
+      fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif'
+    },
+    modal: {
+      backgroundColor: 'white',
+      borderRadius: '16px',
+      padding: '40px 50px',
+      boxShadow: '0 25px 50px rgba(0, 0, 0, 0.25), 0 8px 16px rgba(0, 0, 0, 0.1)',
+      width: '100%',
+      maxWidth: '650px',
+      maxHeight: '90vh',
+      overflowY: 'auto',
+      scrollBehavior: 'smooth',
+      border: '1px solid #e8ecf0',
+      position: 'relative',
+      animation: 'modalSlideIn 0.3s cubic-bezier(0.4, 0, 0.2, 1)'
+    },
+    header: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginBottom: '30px'
+    },
+    heading: {
+      color: '#2c3e50',
+      fontSize: '28px',
+      fontWeight: '700',
+      margin: '0',
+      position: 'relative'
+    },
+    headingAccent: {
+      color: '#7E44EE',
+      display: 'inline-block',
+      background: 'linear-gradient(45deg, #7E44EE, #9B59B6)',
+      WebkitBackgroundClip: 'text',
+      WebkitTextFillColor: 'transparent',
+      backgroundClip: 'text'
+    },
+    closeButton: {
+      background: 'none',
+      border: 'none',
+      fontSize: '24px',
+      color: '#64748b',
+      cursor: 'pointer',
+      padding: '8px',
+      borderRadius: '8px',
+      transition: 'all 0.2s ease',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      width: '36px',
+      height: '36px'
+    },
+    closeButtonHover: {
+      backgroundColor: '#f1f5f9',
+      color: '#374151'
+    },
+    form: {
+      display: 'grid',
+      gridTemplateColumns: '1fr 1fr',
+      gap: '24px 28px'
+    },
+    fieldGroup: {
+      display: 'flex',
+      flexDirection: 'column',
+      position: 'relative'
+    },
+    label: {
+      color: '#34495e',
+      fontSize: '14px',
+      fontWeight: '600',
+      marginBottom: '8px',
+      letterSpacing: '0.5px'
+    },
+    inputWrapper: {
+      position: 'relative'
+    },
+    input: {
+      width: '100%',
+      padding: '14px 16px',
+      border: '2px solid #e8ecf0',
+      borderRadius: '10px',
+      fontSize: '15px',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      outline: 'none',
+      backgroundColor: 'white',
+      boxSizing: 'border-box',
+      fontFamily: 'inherit'
+    },
+    inputFocused: {
+      borderColor: '#7E44EE',
+      boxShadow: '0 0 0 3px rgba(126, 68, 238, 0.1)',
+      transform: 'translateY(-1px)'
+    },
+    buttonGroup: {
+      display: 'flex',
+      gap: '12px',
+      gridColumn: '1 / -1',
+      marginTop: '16px'
+    },
+    button: {
+      padding: '14px 28px',
+      border: 'none',
+      borderRadius: '8px',
+      fontSize: '15px',
+      fontWeight: '600',
+      cursor: 'pointer',
+      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+      letterSpacing: '0.3px',
+      flex: 1
+    },
+    primaryButton: {
+      background: 'linear-gradient(135deg, #7E44EE 0%, #8E44AD 100%)',
+      color: 'white',
+      boxShadow: '0 4px 12px rgba(126, 68, 238, 0.2)'
+    },
+    primaryButtonHover: {
+      transform: 'translateY(-2px)',
+      boxShadow: '0 6px 20px rgba(126, 68, 238, 0.3)'
+    },
+    secondaryButton: {
+      background: '#f8fafc',
+      color: '#64748b',
+      border: '2px solid #e2e8f0'
+    },
+    secondaryButtonHover: {
+      backgroundColor: '#f1f5f9',
+      borderColor: '#cbd5e1',
+      color: '#475569'
+    },
+    error: {
+      color: '#ef4444',
+      fontSize: '14px',
+      marginTop: '8px',
+      gridColumn: '1 / -1',
+      padding: '12px',
+      backgroundColor: '#fef2f2',
+      border: '1px solid #fecaca',
+      borderRadius: '6px'
+    }
+  };
 
 // Add Employee Modal Component
 const AddEmployeeModal = ({ isOpen, onClose, onEmployeeAdded }) => {
@@ -848,114 +848,114 @@ const EmployeesPage = () => {
 
   return (
     <>
-      <div style={styles.container}>
-        <div style={styles.header}>
-          <h1 style={styles.title}>Employees ({employees.length})</h1>
-          <button 
-            style={styles.addButton} 
-            onClick={() => setShowAddModal(true)}
-            onMouseEnter={(e) => {
-              Object.assign(e.target.style, styles.addButtonHover);
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = '#7E44EE';
-              e.target.style.transform = 'none';
-              e.target.style.boxShadow = 'none';
-            }}
-          >
-            <Plus size={20} /> Add Employee
-          </button>
-        </div>
-        
-        <div style={styles.card}>
-          {employees.length === 0 ? (
-            <div style={styles.emptyState}>
-              <div style={styles.emptyStateIcon}>
-                <Users size={48} />
-              </div>
-              <h3>No employees yet</h3>
-              <p>Click "Add Employee" to get started</p>
+    <div style={styles.container}>
+      <div style={styles.header}>
+        <h1 style={styles.title}>Employees ({employees.length})</h1>
+        <button 
+          style={styles.addButton} 
+          onClick={() => setShowAddModal(true)}
+          onMouseEnter={(e) => {
+            Object.assign(e.target.style, styles.addButtonHover);
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = '#7E44EE';
+            e.target.style.transform = 'none';
+            e.target.style.boxShadow = 'none';
+          }}
+        >
+          <Plus size={20} /> Add Employee
+        </button>
+      </div>
+      
+      <div style={styles.card}>
+        {employees.length === 0 ? (
+          <div style={styles.emptyState}>
+            <div style={styles.emptyStateIcon}>
+              <Users size={48} />
             </div>
-          ) : (
-            <table style={styles.table}>
-              <thead>
-                <tr>
-                  <th style={styles.th}>Name</th>
-                  <th style={styles.th}>Department</th>
-                  <th style={styles.th}>Role</th>
-                  <th style={styles.th}>Email</th>
-                  <th style={styles.th}>Phone</th>
-                  <th style={styles.th}>Status</th>
-                  <th style={styles.th}>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {employees.map((emp) => (
-                  <tr key={emp.id}>
-                    <td style={styles.td}>
-                      {emp.user?.first_name} {emp.user?.last_name}
-                    </td>
-                    <td style={styles.td}>{emp.department_name}</td>
-                    <td style={styles.td}>{emp.role}</td>
-                    <td style={styles.td}>{emp.user?.email}</td>
-                    <td style={styles.td}>{emp.phone || 'N/A'}</td>
-                    <td style={styles.td}>
-                      <span 
-                        style={{
-                          ...styles.statusBadge,
-                          ...(emp.is_active ? styles.statusActive : styles.statusInactive)
+            <h3>No employees yet</h3>
+            <p>Click "Add Employee" to get started</p>
+          </div>
+        ) : (
+          <table style={styles.table}>
+            <thead>
+              <tr>
+                <th style={styles.th}>Name</th>
+                <th style={styles.th}>Department</th>
+                <th style={styles.th}>Role</th>
+                <th style={styles.th}>Email</th>
+                <th style={styles.th}>Phone</th>
+                <th style={styles.th}>Status</th>
+                <th style={styles.th}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {employees.map((emp) => (
+                <tr key={emp.id}>
+                  <td style={styles.td}>
+                    {emp.user?.first_name} {emp.user?.last_name}
+                  </td>
+                  <td style={styles.td}>{emp.department_name}</td>
+                  <td style={styles.td}>{emp.role}</td>
+                  <td style={styles.td}>{emp.user?.email}</td>
+                  <td style={styles.td}>{emp.phone || 'N/A'}</td>
+                  <td style={styles.td}>
+                    <span 
+                      style={{
+                        ...styles.statusBadge,
+                        ...(emp.is_active ? styles.statusActive : styles.statusInactive)
+                      }}
+                    >
+                      {emp.is_active ? 'Active' : 'Inactive'}
+                    </span>
+                  </td>
+                  <td style={styles.td}>
+                    <div style={styles.actionsCell}>
+                      <button
+                        style={{...styles.actionButton, ...styles.editButton}}
+                        onClick={() => handleEditEmployee(emp)}
+                        onMouseEnter={(e) => {
+                          Object.assign(e.target.style, styles.editButtonHover);
                         }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = '#e0f2fe';
+                          e.target.style.transform = 'none';
+                          e.target.style.boxShadow = 'none';
+                        }}
+                        title="Edit Employee"
                       >
-                        {emp.is_active ? 'Active' : 'Inactive'}
-                      </span>
-                    </td>
-                    <td style={styles.td}>
-                      <div style={styles.actionsCell}>
-                        <button
-                          style={{...styles.actionButton, ...styles.editButton}}
-                          onClick={() => handleEditEmployee(emp)}
-                          onMouseEnter={(e) => {
-                            Object.assign(e.target.style, styles.editButtonHover);
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = '#e0f2fe';
-                            e.target.style.transform = 'none';
-                            e.target.style.boxShadow = 'none';
-                          }}
-                          title="Edit Employee"
-                        >
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          style={{...styles.actionButton, ...styles.deleteButton}}
-                          onClick={() => handleDeleteEmployee(emp)}
-                          onMouseEnter={(e) => {
-                            Object.assign(e.target.style, styles.deleteButtonHover);
-                          }}
-                          onMouseLeave={(e) => {
-                            e.target.style.backgroundColor = '#fee2e2';
-                            e.target.style.transform = 'none';
-                            e.target.style.boxShadow = 'none';
-                          }}
-                          title="Delete Employee"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
-        </div>
+                        <Edit size={16} />
+                      </button>
+                      <button
+                        style={{...styles.actionButton, ...styles.deleteButton}}
+                        onClick={() => handleDeleteEmployee(emp)}
+                        onMouseEnter={(e) => {
+                          Object.assign(e.target.style, styles.deleteButtonHover);
+                        }}
+                        onMouseLeave={(e) => {
+                          e.target.style.backgroundColor = '#fee2e2';
+                          e.target.style.transform = 'none';
+                          e.target.style.boxShadow = 'none';
+                        }}
+                        title="Delete Employee"
+                      >
+                        <Trash2 size={16} />
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+      </div>
 
-        {/* Add Employee Modal */}
-        <AddEmployeeModal 
-          isOpen={showAddModal}
-          onClose={() => setShowAddModal(false)}
-          onEmployeeAdded={handleEmployeeAdded}
-        />
+      {/* Add Employee Modal */}
+      <AddEmployeeModal 
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onEmployeeAdded={handleEmployeeAdded}
+      />
 
         {showEditModal && (
           <EditEmployeeModal
@@ -966,7 +966,7 @@ const EmployeesPage = () => {
             onEmployeeUpdated={() => dispatch(fetchEmployees())}
           />
         )}
-      </div>
+    </div>
 
       {/* OTP Delete Modal - match AdminUsersPage style and structure */}
       {showDeleteModal && (

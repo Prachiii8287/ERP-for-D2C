@@ -387,7 +387,7 @@ class AdminUserDetailView(generics.RetrieveDestroyAPIView):
     def perform_destroy(self, instance):
         if not self.request.user.is_parent or instance.role != User.UserRole.ADMIN:
             raise generics.exceptions.PermissionDenied("You do not have permission to delete this admin user.")
-        instance.delete()
+        instance.delete() 
 
 class AdminDeleteOTPSendView(APIView):
     def post(self, request):

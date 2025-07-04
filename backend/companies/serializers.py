@@ -97,7 +97,7 @@ class AdminUserSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'email', 'first_name', 'last_name', 'phone', 'is_active', 'date_joined'
         ]
-        read_only_fields = ('id', 'email', 'first_name', 'last_name', 'phone', 'is_active', 'date_joined')
+        read_only_fields = ('id', 'email', 'first_name', 'last_name', 'phone', 'is_active', 'date_joined') 
 
 class AdminDeleteOTPRequestSerializer(serializers.Serializer):
     admin_user_id = serializers.UUIDField()

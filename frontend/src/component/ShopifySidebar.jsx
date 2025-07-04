@@ -24,7 +24,7 @@ const ShopifySidebar = () => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
+
   const handleLogout = async () => {
     try {
       await dispatch(logout()).unwrap();
@@ -36,8 +36,7 @@ const ShopifySidebar = () => {
 
   const handleNavigation = (path) => {
     setActiveItem(path);
-    console.log('Navigating to:', path);
-    // Add your navigation logic here
+    navigate(path); // Actually perform navigation
   };
 
   const isActive = (path) => activeItem === path;
@@ -77,9 +76,8 @@ const ShopifySidebar = () => {
       boxShadow: '2px 0 10px rgba(0, 0, 0, 0.1)',
       display: 'flex',
       flexDirection: 'column',
-      position: 'fixed',
-      height: '100vh',
-      zIndex: 1000
+      position: 'relative',
+      height: '100vh'
     },
     logo: {
       padding: '24px 20px',
@@ -231,217 +229,221 @@ const ShopifySidebar = () => {
   ];
 
   const productDropdownItems = [
-    { path: '/products/categories', label: 'Categories', icon: Grid3X3 },
-    { path: '/products/bom', label: 'BOM', icon: FileText }
+    { path: '/products', label: 'Products', icon: Package },
+    { path: '/products/categories', label: 'Categories', icon: Grid3X3 }
   ];
 
   return (
-    <div style={styles.sidebar}>
-      {/* Logo */}
-      <div style={styles.logo}>
+      <div style={styles.sidebar}>
+        {/* Logo */}
+        <div style={styles.logo}>
         <img src={Logo} alt="Logo" style={{ maxWidth: '100px', maxHeight: '48px', display: 'block', margin: '0 auto' }} />
-      </div>
-      {/* Navigation */}
-      <nav style={styles.nav}>
-        {/* Customers */}
-        <div
-          style={{
-            ...styles.navItem,
-            ...(isActive('/customers') ? styles.navItemActive : {})
-          }}
+        </div>
+        {/* Navigation */}
+        <nav style={styles.nav}>
+          {/* Customers */}
+          <div
+            style={{
+              ...styles.navItem,
+              ...(isActive('/customers') ? styles.navItemActive : {})
+            }}
           onClick={() => { setActiveItem('/customers'); navigate('/customers'); }}
-          onMouseEnter={(e) => {
-            if (!isActive('/customers')) {
-              Object.assign(e.target.style, styles.navItemHover);
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!isActive('/customers')) {
-              e.target.style.backgroundColor = 'transparent';
-            }
-          }}
-        >
-          <div style={styles.navItemLeft}>
-            <Users size={20} style={{ marginRight: '12px' }} />
-            Customers
+            onMouseEnter={(e) => {
+              if (!isActive('/customers')) {
+                Object.assign(e.target.style, styles.navItemHover);
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive('/customers')) {
+                e.target.style.backgroundColor = 'transparent';
+              }
+            }}
+          >
+            <div style={styles.navItemLeft}>
+              <Users size={20} style={{ marginRight: '12px' }} />
+              Customers
+            </div>
           </div>
-        </div>
 
-        {/* Products with Dropdown */}
-        <div
-          style={{
-            ...styles.navItem,
-            ...(isProductsActive() ? styles.navItemActive : {})
-          }}
-          onClick={toggleProducts}
-          onMouseEnter={(e) => {
-            if (!isProductsActive()) {
-              Object.assign(e.target.style, styles.navItemHover);
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!isProductsActive()) {
-              e.target.style.backgroundColor = 'transparent';
-            }
-          }}
-        >
-          <div style={styles.navItemLeft}>
-            <Package size={20} style={{ marginRight: '12px' }} />
-            Products
+          {/* Products with Dropdown */}
+          <div
+            style={{
+              ...styles.navItem,
+              ...(isProductsActive() ? styles.navItemActive : {})
+            }}
+            onClick={toggleProducts}
+            onMouseEnter={(e) => {
+              if (!isProductsActive()) {
+                Object.assign(e.target.style, styles.navItemHover);
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isProductsActive()) {
+                e.target.style.backgroundColor = 'transparent';
+              }
+            }}
+          >
+            <div style={styles.navItemLeft}>
+              <Package size={20} style={{ marginRight: '12px' }} />
+              Products
+            </div>
+            <ChevronDown size={16} style={{ transform: isProductsOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s ease' }} />
           </div>
-          <ChevronDown size={16} style={{ transform: isProductsOpen ? 'rotate(0deg)' : 'rotate(-90deg)', transition: 'transform 0.2s ease' }} />
-        </div>
 
-        {/* Dropdown Items */}
-        {isProductsOpen && (
-          <div style={styles.dropdownContainer}>
-            {productDropdownItems.map((item) => {
-              const IconComponent = item.icon;
-              const active = isActive(item.path);
-              
-              return (
-                <div
-                  key={item.path}
-                  style={{
-                    ...styles.dropdownItem,
-                    ...(active ? styles.dropdownItemActive : {})
-                  }}
-                  onClick={() => handleNavigation(item.path)}
-                  onMouseEnter={(e) => {
-                    if (!active) {
-                      Object.assign(e.target.style, styles.dropdownItemHover);
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!active) {
-                      e.target.style.backgroundColor = 'transparent';
-                    }
-                  }}
-                >
-                  <IconComponent size={16} style={{ marginRight: '8px' }} />
-                  {item.label}
-                </div>
-              );
-            })}
-          </div>
-        )}
+          {/* Dropdown Items */}
+          {isProductsOpen && productDropdownItems.length > 0 && (
+            <div style={styles.dropdownContainer}>
+              {productDropdownItems.map((item) => {
+                const IconComponent = item.icon;
+                const active = isActive(item.path);
+                return (
+                  <div
+                    key={item.path}
+                    style={{
+                      ...styles.dropdownItem,
+                      ...(active ? styles.dropdownItemActive : {})
+                    }}
+                    onClick={() => {
+                      handleNavigation(item.path);
+                      if (item.path === '/products') {
+                        setIsProductsOpen(false); // Close dropdown after navigating to Products
+                      }
+                    }}
+                    onMouseEnter={(e) => {
+                      if (!active) {
+                        Object.assign(e.target.style, styles.dropdownItemHover);
+                      }
+                    }}
+                    onMouseLeave={(e) => {
+                      if (!active) {
+                        e.target.style.backgroundColor = 'transparent';
+                      }
+                    }}
+                  >
+                    <IconComponent size={16} style={{ marginRight: '8px' }} />
+                    {item.label}
+                  </div>
+                );
+              })}
+            </div>
+          )}
 
-        {/* Inventory */}
-        <div
-          style={{
-            ...styles.navItem,
-            ...(isActive('/inventory') ? styles.navItemActive : {})
-          }}
-          onClick={() => handleNavigation('/inventory')}
-          onMouseEnter={(e) => {
-            if (!isActive('/inventory')) {
-              Object.assign(e.target.style, styles.navItemHover);
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!isActive('/inventory')) {
-              e.target.style.backgroundColor = 'transparent';
-            }
-          }}
-        >
-          <div style={styles.navItemLeft}>
-            <Warehouse size={20} style={{ marginRight: '12px' }} />
-            Inventory
+          {/* Inventory */}
+          <div
+            style={{
+              ...styles.navItem,
+              ...(isActive('/inventory') ? styles.navItemActive : {})
+            }}
+            onClick={() => handleNavigation('/inventory')}
+            onMouseEnter={(e) => {
+              if (!isActive('/inventory')) {
+                Object.assign(e.target.style, styles.navItemHover);
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive('/inventory')) {
+                e.target.style.backgroundColor = 'transparent';
+              }
+            }}
+          >
+            <div style={styles.navItemLeft}>
+              <Warehouse size={20} style={{ marginRight: '12px' }} />
+              Inventory
+            </div>
           </div>
-        </div>
 
-        {/* Orders */}
-        <div
-          style={{
-            ...styles.navItem,
-            ...(isActive('/orders') ? styles.navItemActive : {})
-          }}
-          onClick={() => handleNavigation('/orders')}
-          onMouseEnter={(e) => {
-            if (!isActive('/orders')) {
-              Object.assign(e.target.style, styles.navItemHover);
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!isActive('/orders')) {
-              e.target.style.backgroundColor = 'transparent';
-            }
-          }}
-        >
-          <div style={styles.navItemLeft}>
-            <ShoppingCart size={20} style={{ marginRight: '12px' }} />
-            Orders
+          {/* Orders */}
+          <div
+            style={{
+              ...styles.navItem,
+              ...(isActive('/orders') ? styles.navItemActive : {})
+            }}
+            onClick={() => handleNavigation('/orders')}
+            onMouseEnter={(e) => {
+              if (!isActive('/orders')) {
+                Object.assign(e.target.style, styles.navItemHover);
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive('/orders')) {
+                e.target.style.backgroundColor = 'transparent';
+              }
+            }}
+          >
+            <div style={styles.navItemLeft}>
+              <ShoppingCart size={20} style={{ marginRight: '12px' }} />
+              Orders
+            </div>
           </div>
-        </div>
 
-        {/* Procurement */}
-        <div
-          style={{
-            ...styles.navItem,
-            ...(isActive('/procurement') ? styles.navItemActive : {})
-          }}
-          onClick={() => handleNavigation('/procurement')}
-          onMouseEnter={(e) => {
-            if (!isActive('/procurement')) {
-              Object.assign(e.target.style, styles.navItemHover);
-            }
-          }}
-          onMouseLeave={(e) => {
-            if (!isActive('/procurement')) {
-              e.target.style.backgroundColor = 'transparent';
-            }
-          }}
-        >
-          <div style={styles.navItemLeft}>
-            <Truck size={20} style={{ marginRight: '12px' }} />
-            Procurement
+          {/* Procurement */}
+          <div
+            style={{
+              ...styles.navItem,
+              ...(isActive('/procurement') ? styles.navItemActive : {})
+            }}
+            onClick={() => handleNavigation('/procurement')}
+            onMouseEnter={(e) => {
+              if (!isActive('/procurement')) {
+                Object.assign(e.target.style, styles.navItemHover);
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive('/procurement')) {
+                e.target.style.backgroundColor = 'transparent';
+              }
+            }}
+          >
+            <div style={styles.navItemLeft}>
+              <Truck size={20} style={{ marginRight: '12px' }} />
+              Procurement
+            </div>
           </div>
-        </div>
-      </nav>
-      {/* Bottom Section */}
-      <div style={styles.bottomSection}>
-        {/* Account Settings */}
-        <div
+        </nav>
+        {/* Bottom Section */}
+        <div style={styles.bottomSection}>
+          {/* Account Settings */}
+          <div
           style={styles.accountSettings}
           onClick={handleAccountSettings}
         >
           <Settings style={{ marginRight: '10px' }} />
-          Account Settings
-        </div>
-
-        {/* User Section */}
-        <div style={styles.userSection}>
-          <div style={styles.userInfo}>
-            <div style={styles.userAvatar}>
-              <User size={20} color="white" />
-            </div>
-            <div>
-              <div style={styles.userName}>
-                {user ? `${user.first_name} ${user.last_name}` : 'User'}
-              </div>
-              <div style={styles.userRole}>
-                {user?.role?.toLowerCase() || 'user'}
-              </div>
-            </div>
+              Account Settings
           </div>
-          
-          <button
-            onClick={handleLogout}
-            style={styles.logoutButton}
-            onMouseEnter={(e) => {
-              e.target.style.backgroundColor = '#fee2e2';
-              e.target.style.borderColor = '#ef4444';
-              e.target.style.color = '#dc2626';
-            }}
-            onMouseLeave={(e) => {
-              e.target.style.backgroundColor = 'transparent';
-              e.target.style.borderColor = '#e5e7eb';
-              e.target.style.color = '#6b7280';
-            }}
-          >
-            <LogOut size={16} style={{ marginRight: '8px' }} />
-            Logout
-          </button>
+
+          {/* User Section */}
+          <div style={styles.userSection}>
+            <div style={styles.userInfo}>
+              <div style={styles.userAvatar}>
+                <User size={20} color="white" />
+              </div>
+              <div>
+                <div style={styles.userName}>
+                  {user ? `${user.first_name} ${user.last_name}` : 'User'}
+                </div>
+                <div style={styles.userRole}>
+                  {user?.role?.toLowerCase() || 'user'}
+                </div>
+              </div>
+            </div>
+            
+            <button
+              onClick={handleLogout}
+              style={styles.logoutButton}
+              onMouseEnter={(e) => {
+                e.target.style.backgroundColor = '#fee2e2';
+                e.target.style.borderColor = '#ef4444';
+                e.target.style.color = '#dc2626';
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.backgroundColor = 'transparent';
+                e.target.style.borderColor = '#e5e7eb';
+                e.target.style.color = '#6b7280';
+              }}
+            >
+              <LogOut size={16} style={{ marginRight: '8px' }} />
+              Logout
+            </button>
         </div>
       </div>
     </div>

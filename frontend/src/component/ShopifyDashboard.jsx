@@ -102,7 +102,7 @@ const ShopifyDashboard = () => {
                 <div style={{
                   height: '10px',
                   borderRadius: '8px',
-                  backgroundColor: item.color,
+                    backgroundColor: item.color,
                   width: item.value + '%',
                   transition: 'width 0.5s'
                 }}></div>

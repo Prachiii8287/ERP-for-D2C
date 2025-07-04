@@ -20,6 +20,8 @@ import AddEmployee from './component/AddEmployeeForm';
 import Departments from './component/Departments';
 import ShopifyDashboard from './component/ShopifyDashboard';
 import CustomerPage from './component/CustomerPage';
+import ProductPage from './component/ProductPage';
+import ShopifyLayout from './component/ShopifyLayout';
 // import ProjectsPage from './component/ProjectsPage';
 // import TimesheetsPage from './component/TimesheetsPage';
 
@@ -75,7 +77,15 @@ function AppContent() {
         {/* Shopify Dashboard Route (no Layout/sidebar) */}
         <Route path="/shopify-dashboard" element={<ProtectedRoute><ShopifyDashboard /></ProtectedRoute>} />
         
-        {/* Protected Routes with Layout */}
+        {/* Shopify-related routes with ShopifySidebar */}
+        <Route path="/" element={<ProtectedRoute><ShopifyLayout /></ProtectedRoute>}>
+          <Route path="products" element={<ProductPage />} />
+          {/* If you have a CategoriesPage, add it here: */}
+          {/* <Route path="products/categories" element={<CategoriesPage />} /> */}
+          <Route path="customers" element={<CustomerPage />} />
+        </Route>
+
+        {/* Protected Routes with main Layout */}
         <Route path="/" element={<ProtectedRoute><Layout /></ProtectedRoute>}>
           {/* Company Owner Routes */}
           <Route path="company-dashboard" element={<CompanyDashboard />} />
@@ -94,7 +104,6 @@ function AppContent() {
           {/* Admin/Employee Routes */}
           <Route path="admin-dashboard" element={<AdminDashboard />} />
           <Route path="dashboard" element={<EmployeeDashboard />} />
-          <Route path="customers" element={<CustomerPage />} />
         </Route>
 
 

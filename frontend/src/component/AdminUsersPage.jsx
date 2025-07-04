@@ -469,7 +469,7 @@ const AdminUsersPage = () => {
     try {
       await dispatch(createAdminUser(payload)).unwrap();
       dispatch(fetchAdminUsers()); // Refresh list
-      handleCloseModal();
+    handleCloseModal();
     } catch (error) {
       setFormErrors({ api: error.message || 'Failed to add admin user' });
     }

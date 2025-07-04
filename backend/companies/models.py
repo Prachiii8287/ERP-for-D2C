@@ -72,7 +72,7 @@ class Department(models.Model):
         ordering = ['name']
 
     def __str__(self):
-        return f"{self.company.name} - {self.name}"
+        return f"{self.company.name} - {self.name}" 
 
 class AdminDeleteOTP(models.Model):
     owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='admin_delete_otps')
