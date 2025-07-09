@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Download, Upload } from 'lucide-react';
 
 const CustomerPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -243,13 +244,16 @@ const CustomerPage = () => {
   const toolbarStyle = {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: '20px',
-    padding: '16px 20px',
+    marginBottom: '8px',
+    padding: '10px 16px',
     backgroundColor: 'white',
     borderRadius: '8px',
     boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-    border: '1px solid #e1e5e9'
+    border: '1px solid #e1e5e9',
+    position: 'sticky',
+    top: 0,
+    zIndex: 20,
+    width: 'fit-content'
   };
 
   const searchContainerStyle = {
@@ -259,11 +263,11 @@ const CustomerPage = () => {
   };
 
   const searchInputStyle = {
-    padding: '10px 16px',
+    padding: '8px 12px',
     fontSize: '14px',
     border: '2px solid #e1e5e9',
     borderRadius: '6px',
-    width: '320px',
+    width: '280px',
     outline: 'none',
     transition: 'all 0.2s ease',
     fontFamily: 'inherit'
@@ -274,16 +278,6 @@ const CustomerPage = () => {
     fontWeight: '600',
     color: '#333',
     minWidth: '50px'
-  };
-
-  const counterStyle = {
-    fontSize: '14px',
-    color: '#7E44EE',
-    fontWeight: '600',
-    padding: '8px 16px',
-    backgroundColor: 'rgba(126, 68, 238, 0.1)',
-    borderRadius: '20px',
-    border: '1px solid rgba(126, 68, 238, 0.2)'
   };
 
   const tableContainerStyle = {
@@ -411,8 +405,44 @@ const CustomerPage = () => {
     fontWeight: '400'
   };
 
+  // Add styles for the fixed button container and buttons
+  const shopifyButtonContainerStyle = {
+    position: 'fixed',
+    top: '32px', // adjust as needed
+    right: '40px', // adjust as needed
+    display: 'flex',
+    gap: '12px',
+    zIndex: 200
+  };
+
+  const shopifyButtonStyle = {
+    padding: '8px 18px',
+    backgroundColor: '#7E44EE',
+    color: 'white',
+    border: 'none',
+    borderRadius: '6px',
+    fontWeight: '600',
+    fontSize: '14px',
+    cursor: 'pointer',
+    boxShadow: '0 2px 8px rgba(126, 68, 238, 0.08)',
+    transition: 'background 0.2s',
+    outline: 'none',
+    whiteSpace: 'nowrap'
+  };
+
   return (
     <div style={containerStyle}>
+      {/* Fixed Shopify Buttons */}
+      <div style={shopifyButtonContainerStyle}>
+        <button style={shopifyButtonStyle}>
+          <Download size={16} style={{ marginRight: 8 }} />
+          Fetch from Shopify
+        </button>
+        <button style={shopifyButtonStyle}>
+          <Upload size={16} style={{ marginRight: 8 }} />
+          Push to Shopify
+        </button>
+      </div>
       <div style={toolbarStyle}>
         <div style={searchContainerStyle}>
           <label style={searchLabelStyle}>Filter:</label>
@@ -425,9 +455,6 @@ const CustomerPage = () => {
             onFocus={(e) => e.target.style.borderColor = '#7E44EE'}
             onBlur={(e) => e.target.style.borderColor = '#e1e5e9'}
           />
-        </div>
-        <div style={counterStyle}>
-          {filteredCustomers.length} of {customers.length} records
         </div>
       </div>
       

@@ -5,7 +5,7 @@ import { Outlet } from 'react-router-dom';
 const ShopifyLayout = () => (
   <div style={{ display: 'flex' }}>
     <ShopifySidebar />
-    <div style={{ flex: 1 }}>
+    <div style={{ flex: 1, marginLeft: '250px' }}>
       <Outlet />
     </div>
   </div>

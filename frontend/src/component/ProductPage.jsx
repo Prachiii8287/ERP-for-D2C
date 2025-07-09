@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Plus, Eye, Edit, Trash2 } from 'lucide-react';
+import { Search, Plus, Eye, Edit, Trash2, Download, Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { productsAPI } from '../services/api';
 import { useSelector } from 'react-redux';
@@ -131,29 +131,75 @@ const ProductPage = () => {
           />
         </div>
 
-        {/* Add Product Button */}
-        <button
-          onClick={() => navigate('/products/add')}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            backgroundColor: '#7E44EE',
-            color: 'white',
-            border: 'none',
-            padding: '12px 20px',
-            borderRadius: '6px',
-            fontSize: '14px',
-            fontWeight: 'bold',
-            cursor: 'pointer',
-            transition: 'background-color 0.2s'
-          }}
-          onMouseOver={(e) => e.target.style.backgroundColor = '#6a3ac7'}
-          onMouseOut={(e) => e.target.style.backgroundColor = '#7E44EE'}
-        >
-          <Plus size={18} />
-          Add Product
-        </button>
+        {/* Add Product and Shopify Buttons */}
+        <div style={{ display: 'flex', gap: '12px' }}>
+          <button
+            onClick={() => {/* TODO: Fetch from Shopify handler */}}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: '#7E44EE',
+              color: 'white',
+              border: 'none',
+              padding: '12px 20px',
+              borderRadius: '6px',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s'
+            }}
+            onMouseOver={e => e.target.style.backgroundColor = '#6a3ac7'}
+            onMouseOut={e => e.target.style.backgroundColor = '#7E44EE'}
+          >
+            <Download size={18} />
+            Fetch from Shopify
+          </button>
+          <button
+            onClick={() => {/* TODO: Push to Shopify handler */}}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: '#7E44EE',
+              color: 'white',
+              border: 'none',
+              padding: '12px 20px',
+              borderRadius: '6px',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s'
+            }}
+            onMouseOver={e => e.target.style.backgroundColor = '#6a3ac7'}
+            onMouseOut={e => e.target.style.backgroundColor = '#7E44EE'}
+          >
+            <Upload size={18} />
+            Push to Shopify
+          </button>
+          <button
+            onClick={() => navigate('/products/add')}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              backgroundColor: '#7E44EE',
+              color: 'white',
+              border: 'none',
+              padding: '12px 20px',
+              borderRadius: '6px',
+              fontSize: '14px',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+              transition: 'background-color 0.2s'
+            }}
+            onMouseOver={(e) => e.target.style.backgroundColor = '#6a3ac7'}
+            onMouseOut={(e) => e.target.style.backgroundColor = '#7E44EE'}
+          >
+            <Plus size={18} />
+            Add Product
+          </button>
+        </div>
       </div>
 
       {/* Products Table */}

@@ -75,8 +75,11 @@ const ShopifySidebar = () => {
       boxShadow: '2px 0 10px rgba(0, 0, 0, 0.1)',
       display: 'flex',
       flexDirection: 'column',
-      position: 'relative',
-      height: '100vh'
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      height: '100vh',
+      zIndex: 1000
     },
     logo: {
       padding: '24px 20px',
