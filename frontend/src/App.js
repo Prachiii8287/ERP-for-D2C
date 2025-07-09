@@ -22,6 +22,9 @@ import ShopifyDashboard from './component/ShopifyDashboard';
 import CustomerPage from './component/CustomerPage';
 import ProductPage from './component/ProductPage';
 import ShopifyLayout from './component/ShopifyLayout';
+import AddProducts from './component/AddProducts';
+import VariantPage from './component/VariantPage';
+import CategoriesPage from './component/CategoriesPage';
 // import ProjectsPage from './component/ProjectsPage';
 // import TimesheetsPage from './component/TimesheetsPage';
 
@@ -73,15 +76,17 @@ function AppContent() {
             )
           } 
         />
-
+        
         {/* Shopify Dashboard Route (no Layout/sidebar) */}
         <Route path="/shopify-dashboard" element={<ProtectedRoute><ShopifyDashboard /></ProtectedRoute>} />
         
         {/* Shopify-related routes with ShopifySidebar */}
         <Route path="/" element={<ProtectedRoute><ShopifyLayout /></ProtectedRoute>}>
           <Route path="products" element={<ProductPage />} />
-          {/* If you have a CategoriesPage, add it here: */}
-          {/* <Route path="products/categories" element={<CategoriesPage />} /> */}
+          <Route path="products/add" element={<AddProducts />} />
+          <Route path="products/edit/:id" element={<AddProducts />} />
+          <Route path="products/:id/variants" element={<VariantPage />} />
+          <Route path="products/categories" element={<CategoriesPage />} />
           <Route path="customers" element={<CustomerPage />} />
         </Route>
 

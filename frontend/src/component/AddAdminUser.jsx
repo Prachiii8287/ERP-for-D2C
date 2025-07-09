@@ -226,7 +226,23 @@
 //       </div>
 //       {/* Header */}
 //       <div style={styles.header}>
-//         <h1 style={styles.title}>Add Admin User</h1>
+//         <h1 style={{
+//           color: '#7E44EE',
+//           fontSize: '32px',
+//           fontWeight: '700',
+//           textAlign: 'left',
+//           margin: 0,
+//           background: 'none',
+//           backgroundImage: 'none',
+//           WebkitBackgroundClip: 'unset',
+//           WebkitTextFillColor: 'unset',
+//           backgroundClip: 'unset',
+//           padding: 0,
+//           border: 'none',
+//           boxShadow: 'none'
+//         }}>
+//           Add Admin User
+//         </h1>
 //       </div>
 
 //       {/* Form */}
@@ -424,14 +440,29 @@
 //             <button
 //               type="submit"
 //               disabled={loading?.createAdminUser}
-//               style={styles.submitButton}
-//               onMouseEnter={(e) => {
+//               style={{
+//                 ...styles.submitButton,
+//                 background: 'none',
+//                 backgroundImage: 'none',
+//                 backgroundColor: '#7E44EE',
+//                 color: 'white',
+//                 border: 'none',
+//                 borderRadius: '8px',
+//                 fontSize: '16px',
+//                 fontWeight: '600',
+//                 padding: '12px 24px',
+//                 cursor: 'pointer',
+//                 transition: 'all 0.2s ease',
+//                 minWidth: '160px',
+//                 boxShadow: '0 4px 12px rgba(126, 68, 238, 0.15)'
+//               }}
+//               onMouseEnter={e => {
 //                 if (!loading?.createAdminUser) {
-//                   e.target.style.backgroundColor = '#7E44EE';
+//                   e.target.style.backgroundColor = '#6B2FD9';
 //                   e.target.style.transform = 'translateY(-1px)';
 //                 }
 //               }}
-//               onMouseLeave={(e) => {
+//               onMouseLeave={e => {
 //                 if (!loading?.createAdminUser) {
 //                   e.target.style.backgroundColor = '#7E44EE';
 //                   e.target.style.transform = 'translateY(0)';
@@ -453,7 +484,7 @@
 //               ) : (
 //                 <>
 //                   <Save size={20} />
-//                   Create Admin User
+//                   Save Admin User
 //                 </>
 //               )}
 //             </button>

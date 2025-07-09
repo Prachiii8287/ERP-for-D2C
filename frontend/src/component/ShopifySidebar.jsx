@@ -11,15 +11,16 @@ import {
   ChevronDown, 
   ChevronRight,
   Grid3X3,
-  FileText
+  FileText,
+  Home
 } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { logout } from '../store/authSlice';
 import Logo from './Logo.png';
 
 const ShopifySidebar = () => {
-  const [activeItem, setActiveItem] = useState('/customers');
+  const location = useLocation();
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
@@ -35,22 +36,20 @@ const ShopifySidebar = () => {
   };
 
   const handleNavigation = (path) => {
-    setActiveItem(path);
     navigate(path); // Actually perform navigation
   };
 
-  const isActive = (path) => activeItem === path;
+  const isActive = (path) => location.pathname === path;
   const isProductsActive = () => {
-    return activeItem === '/products' || 
-           activeItem === '/products/categories' || 
-           activeItem === '/products/bom';
+    return (
+      location.pathname === '/products' ||
+      location.pathname === '/products/categories' ||
+      location.pathname === '/products/bom'
+    );
   };
 
   const toggleProducts = () => {
     setIsProductsOpen(!isProductsOpen);
-    if (!isProductsOpen && !isProductsActive()) {
-      setActiveItem('/products');
-    }
   };
 
   const handleAccountSettings = () => {
@@ -241,13 +240,36 @@ const ShopifySidebar = () => {
         </div>
         {/* Navigation */}
         <nav style={styles.nav}>
+          {/* Home */}
+          <div
+            style={{
+              ...styles.navItem,
+              ...(isActive('/shopify-dashboard') ? styles.navItemActive : {})
+            }}
+            onClick={() => handleNavigation('/shopify-dashboard')}
+            onMouseEnter={(e) => {
+              if (!isActive('/shopify-dashboard')) {
+                Object.assign(e.target.style, styles.navItemHover);
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive('/shopify-dashboard')) {
+                e.target.style.backgroundColor = 'transparent';
+              }
+            }}
+          >
+            <div style={styles.navItemLeft}>
+              <Home size={20} style={{ marginRight: '12px' }} />
+              Home
+            </div>
+          </div>
           {/* Customers */}
           <div
             style={{
               ...styles.navItem,
               ...(isActive('/customers') ? styles.navItemActive : {})
             }}
-          onClick={() => { setActiveItem('/customers'); navigate('/customers'); }}
+            onClick={() => handleNavigation('/customers')}
             onMouseEnter={(e) => {
               if (!isActive('/customers')) {
                 Object.assign(e.target.style, styles.navItemHover);

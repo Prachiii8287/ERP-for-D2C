@@ -855,170 +855,255 @@ const AdminUsersPage = () => {
       {/* Add Admin Modal */}
       {showModal && (
         <div style={styles.modalOverlay} onClick={handleCloseModal}>
-          <div style={styles.modal} onClick={(e) => e.stopPropagation()}>
-            <div style={styles.modalHeader}>
-              <h2 style={styles.modalTitle}>Add Admin User</h2>
-              <button style={styles.closeButton} onClick={handleCloseModal}>
-                <X size={24} />
+          <div style={{
+            background: 'white',
+            borderRadius: '16px',
+            padding: '50px 60px',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.06)',
+            width: '100%',
+            maxWidth: '600px',
+            border: '1px solid #e8ecf0',
+            position: 'relative',
+            margin: '0 auto',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: 40 }}>
+              <h1 style={{
+                color: '#7E44EE',
+                fontSize: '32px',
+                fontWeight: '700',
+                textAlign: 'left',
+                margin: 0,
+                background: 'none',
+                backgroundImage: 'none',
+                WebkitBackgroundClip: 'unset',
+                WebkitTextFillColor: 'unset',
+                backgroundClip: 'unset',
+                padding: 0,
+                border: 'none',
+                boxShadow: 'none'
+              }}>
+                Add Admin User
+              </h1>
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', marginLeft: 16 }} onClick={handleCloseModal}>
+                <X size={28} />
               </button>
             </div>
-
-            <form onSubmit={(e) => e.preventDefault()}>
+            <form onSubmit={e => e.preventDefault()} style={{ width: '100%' }}>
               {formErrors.api && (
                 <div style={{ color: 'red', marginBottom: 12 }}>{formErrors.api}</div>
               )}
-              <div style={styles.formGroup}>
-                <label style={styles.label}>First Name *</label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={formData.firstName}
-                  onChange={handleInputChange}
-                  style={{
-                    ...styles.input,
-                    ...(formErrors.firstName ? styles.inputError : {})
-                  }}
-                  placeholder="Enter first name"
-                />
-                {formErrors.firstName && (
-                  <div style={styles.errorText}>{formErrors.firstName}</div>
-                )}
-              </div>
-
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Last Name *</label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleInputChange}
-                  style={{
-                    ...styles.input,
-                    ...(formErrors.lastName ? styles.inputError : {})
-                  }}
-                  placeholder="Enter last name"
-                />
-                {formErrors.lastName && (
-                  <div style={styles.errorText}>{formErrors.lastName}</div>
-                )}
-              </div>
-
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Email *</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={formData.email}
-                  onChange={handleInputChange}
-                  style={{
-                    ...styles.input,
-                    ...(formErrors.email ? styles.inputError : {})
-                  }}
-                  placeholder="Enter email address"
-                />
-                {formErrors.email && (
-                  <div style={styles.errorText}>{formErrors.email}</div>
-                )}
-              </div>
-
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Phone *</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  style={{
-                    ...styles.input,
-                    ...(formErrors.phone ? styles.inputError : {})
-                  }}
-                  placeholder="Enter phone number"
-                />
-                {formErrors.phone && (
-                  <div style={styles.errorText}>{formErrors.phone}</div>
-                )}
-              </div>
-
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Password *</label>
-                <div style={styles.passwordWrapper}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '28px 32px' }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <label style={{ color: '#34495e', fontSize: '15px', fontWeight: '600', marginBottom: '10px', letterSpacing: '0.5px' }}>First Name *</label>
                   <input
-                    type={showPassword ? "text" : "password"}
-                    name="password"
-                    value={formData.password}
+                    type="text"
+                    name="firstName"
+                    value={formData.firstName}
                     onChange={handleInputChange}
                     style={{
-                      ...styles.input,
-                      ...(formErrors.password ? styles.inputError : {}),
-                      paddingRight: '48px'
+                      width: '100%',
+                      padding: '16px 20px',
+                      border: '2px solid #e8ecf0',
+                      borderRadius: '12px',
+                      fontSize: '16px',
+                      outline: 'none',
+                      backgroundColor: 'white',
+                      fontFamily: 'inherit',
+                      ...(formErrors.firstName ? { borderColor: '#dc2626' } : {})
                     }}
-                    placeholder="Enter password"
+                    placeholder="Enter first name"
+                    required
                   />
-                  <button
-                    type="button"
-                    style={styles.passwordToggle}
-                    onClick={() => setShowPassword(!showPassword)}
-                  >
-                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
+                  {formErrors.firstName && (
+                    <div style={{ color: '#dc2626', fontSize: '12px', marginTop: '4px' }}>{formErrors.firstName}</div>
+                  )}
                 </div>
-                {formErrors.password && (
-                  <div style={styles.errorText}>{formErrors.password}</div>
-                )}
-              </div>
-
-              <div style={styles.formGroup}>
-                <label style={styles.label}>Confirm Password *</label>
-                <div style={styles.passwordWrapper}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <label style={{ color: '#34495e', fontSize: '15px', fontWeight: '600', marginBottom: '10px', letterSpacing: '0.5px' }}>Last Name *</label>
                   <input
-                    type={showConfirmPassword ? "text" : "password"}
-                    name="confirmPassword"
-                    value={formData.confirmPassword}
+                    type="text"
+                    name="lastName"
+                    value={formData.lastName}
                     onChange={handleInputChange}
                     style={{
-                      ...styles.input,
-                      ...(formErrors.confirmPassword ? styles.inputError : {}),
-                      paddingRight: '48px'
+                      width: '100%',
+                      padding: '16px 20px',
+                      border: '2px solid #e8ecf0',
+                      borderRadius: '12px',
+                      fontSize: '16px',
+                      outline: 'none',
+                      backgroundColor: 'white',
+                      fontFamily: 'inherit',
+                      ...(formErrors.lastName ? { borderColor: '#dc2626' } : {})
                     }}
-                    placeholder="Confirm password"
+                    placeholder="Enter last name"
+                    required
                   />
-                  <button
-                    type="button"
-                    style={styles.passwordToggle}
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  >
-                    {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                  </button>
+                  {formErrors.lastName && (
+                    <div style={{ color: '#dc2626', fontSize: '12px', marginTop: '4px' }}>{formErrors.lastName}</div>
+                  )}
                 </div>
-                {formErrors.confirmPassword && (
-                  <div style={styles.errorText}>{formErrors.confirmPassword}</div>
-                )}
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <label style={{ color: '#34495e', fontSize: '15px', fontWeight: '600', marginBottom: '10px', letterSpacing: '0.5px' }}>Email *</label>
+                  <input
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    style={{
+                      width: '100%',
+                      padding: '16px 20px',
+                      border: '2px solid #e8ecf0',
+                      borderRadius: '12px',
+                      fontSize: '16px',
+                      outline: 'none',
+                      backgroundColor: 'white',
+                      fontFamily: 'inherit',
+                      ...(formErrors.email ? { borderColor: '#dc2626' } : {})
+                    }}
+                    placeholder="Enter email address"
+                    required
+                  />
+                  {formErrors.email && (
+                    <div style={{ color: '#dc2626', fontSize: '12px', marginTop: '4px' }}>{formErrors.email}</div>
+                  )}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <label style={{ color: '#34495e', fontSize: '15px', fontWeight: '600', marginBottom: '10px', letterSpacing: '0.5px' }}>Phone *</label>
+                  <input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    style={{
+                      width: '100%',
+                      padding: '16px 20px',
+                      border: '2px solid #e8ecf0',
+                      borderRadius: '12px',
+                      fontSize: '16px',
+                      outline: 'none',
+                      backgroundColor: 'white',
+                      fontFamily: 'inherit',
+                      ...(formErrors.phone ? { borderColor: '#dc2626' } : {})
+                    }}
+                    placeholder="Enter phone number"
+                    required
+                  />
+                  {formErrors.phone && (
+                    <div style={{ color: '#dc2626', fontSize: '12px', marginTop: '4px' }}>{formErrors.phone}</div>
+                  )}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <label style={{ color: '#34495e', fontSize: '15px', fontWeight: '600', marginBottom: '10px', letterSpacing: '0.5px' }}>Password *</label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showPassword ? "text" : "password"}
+                      name="password"
+                      value={formData.password}
+                      onChange={handleInputChange}
+                      style={{
+                        width: '100%',
+                        padding: '16px 20px',
+                        border: '2px solid #e8ecf0',
+                        borderRadius: '12px',
+                        fontSize: '16px',
+                        outline: 'none',
+                        backgroundColor: 'white',
+                        fontFamily: 'inherit',
+                        paddingRight: '48px',
+                        ...(formErrors.password ? { borderColor: '#dc2626' } : {})
+                      }}
+                      placeholder="Enter password"
+                      required
+                    />
+                    <button
+                      type="button"
+                      style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', padding: '4px' }}
+                      onClick={() => setShowPassword(!showPassword)}
+                    >
+                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  {formErrors.password && (
+                    <div style={{ color: '#dc2626', fontSize: '12px', marginTop: '4px' }}>{formErrors.password}</div>
+                  )}
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <label style={{ color: '#34495e', fontSize: '15px', fontWeight: '600', marginBottom: '10px', letterSpacing: '0.5px' }}>Confirm Password *</label>
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type={showConfirmPassword ? "text" : "password"}
+                      name="confirmPassword"
+                      value={formData.confirmPassword}
+                      onChange={handleInputChange}
+                      style={{
+                        width: '100%',
+                        padding: '16px 20px',
+                        border: '2px solid #e8ecf0',
+                        borderRadius: '12px',
+                        fontSize: '16px',
+                        outline: 'none',
+                        backgroundColor: 'white',
+                        fontFamily: 'inherit',
+                        paddingRight: '48px',
+                        ...(formErrors.confirmPassword ? { borderColor: '#dc2626' } : {})
+                      }}
+                      placeholder="Confirm password"
+                      required
+                    />
+                    <button
+                      type="button"
+                      style={{ position: 'absolute', right: 16, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', padding: '4px' }}
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    >
+                      {showConfirmPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                    </button>
+                  </div>
+                  {formErrors.confirmPassword && (
+                    <div style={{ color: '#dc2626', fontSize: '12px', marginTop: '4px' }}>{formErrors.confirmPassword}</div>
+                  )}
+                </div>
               </div>
-
-              <div style={styles.modalActions}>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '16px', marginTop: '32px' }}>
                 <button
                   type="button"
-                  style={styles.cancelButton}
+                  style={{
+                    background: '#f3f4f6',
+                    color: '#374151',
+                    border: 'none',
+                    borderRadius: '10px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    padding: '16px 32px',
+                    cursor: 'pointer',
+                    transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                    minWidth: '120px',
+                  }}
                   onClick={handleCloseModal}
-                  onMouseEnter={(e) => {
-                    e.target.style.backgroundColor = '#f3f4f6';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.backgroundColor = 'white';
-                  }}
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
-                  style={styles.saveButton}
+                  style={{
+                    background: 'none',
+                    backgroundImage: 'none',
+                    backgroundColor: '#7E44EE',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    padding: '12px 24px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    minWidth: '160px',
+                    boxShadow: '0 4px 12px rgba(126, 68, 238, 0.15)'
+                  }}
                   onClick={handleSaveAdmin}
-                  onMouseEnter={(e) => {
-                    e.target.style.backgroundColor = '#6B2FD9';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.target.style.backgroundColor = '#7E44EE';
-                  }}
                 >
                   Save Admin User
                 </button>
@@ -1059,16 +1144,76 @@ const AdminUsersPage = () => {
       {/* Edit Modal */}
       {showEditModal && editAdmin && (
         <div style={styles.modalOverlay} onClick={() => setShowEditModal(false)}>
-          <div style={styles.modal} onClick={e => e.stopPropagation()}>
-            <h2>Edit Admin User</h2>
-            <input value={editAdmin.first_name} onChange={e => setEditAdmin({ ...editAdmin, first_name: e.target.value })} placeholder="First Name" style={styles.input} />
-            <input value={editAdmin.last_name} onChange={e => setEditAdmin({ ...editAdmin, last_name: e.target.value })} placeholder="Last Name" style={styles.input} />
-            <input value={editAdmin.email} onChange={e => setEditAdmin({ ...editAdmin, email: e.target.value })} placeholder="Email" style={styles.input} />
-            <input value={editAdmin.phone} onChange={e => setEditAdmin({ ...editAdmin, phone: e.target.value })} placeholder="Phone" style={styles.input} />
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
-              <button onClick={() => setShowEditModal(false)} style={{ padding: '10px 20px', borderRadius: 6, border: '1px solid #ccc', background: '#fff' }}>Cancel</button>
-              <button onClick={handleSaveEditAdmin} style={{ padding: '10px 20px', borderRadius: 6, background: '#7E44EE', color: '#fff', border: 'none' }}>Save Changes</button>
+          <div style={{
+            background: 'white',
+            borderRadius: '16px',
+            padding: '50px 60px',
+            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.1), 0 4px 8px rgba(0, 0, 0, 0.06)',
+            width: '100%',
+            maxWidth: '600px',
+            border: '1px solid #e8ecf0',
+            position: 'relative',
+            margin: '0 auto',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+          }} onClick={e => e.stopPropagation()}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', marginBottom: 40 }}>
+              <h1 style={{
+                color: '#7E44EE',
+                fontSize: '32px',
+                fontWeight: '700',
+                textAlign: 'left',
+                margin: 0
+              }}>
+                Edit Admin User
+              </h1>
+              <button style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b7280', marginLeft: 16 }} onClick={() => setShowEditModal(false)}>
+                <X size={28} />
+              </button>
             </div>
+            <form style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 20, width: '100%' }} onSubmit={e => e.preventDefault()}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <label style={styles.label}>First Name</label>
+                <input value={editAdmin.first_name} onChange={e => setEditAdmin({ ...editAdmin, first_name: e.target.value })} placeholder="First Name" style={styles.input} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <label style={styles.label}>Last Name</label>
+                <input value={editAdmin.last_name} onChange={e => setEditAdmin({ ...editAdmin, last_name: e.target.value })} placeholder="Last Name" style={styles.input} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <label style={styles.label}>Email</label>
+                <input value={editAdmin.email} onChange={e => setEditAdmin({ ...editAdmin, email: e.target.value })} placeholder="Email" style={styles.input} />
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <label style={styles.label}>Phone</label>
+                <input value={editAdmin.phone} onChange={e => setEditAdmin({ ...editAdmin, phone: e.target.value })} placeholder="Phone" style={styles.input} />
+              </div>
+              {/* Empty div to fill grid if needed */}
+              <div></div>
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, gridColumn: '1 / span 2', marginTop: 24 }}>
+                <button type="button" onClick={() => setShowEditModal(false)} style={{ ...styles.cancelButton, minWidth: 120 }}>Cancel</button>
+                <button
+                  type="button"
+                  onClick={handleSaveEditAdmin}
+                  style={{
+                    backgroundColor: '#7E44EE',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: '8px',
+                    fontSize: '16px',
+                    fontWeight: '600',
+                    padding: '12px 24px',
+                    cursor: 'pointer',
+                    transition: 'all 0.2s ease',
+                    minWidth: '160px',
+                    boxShadow: '0 4px 12px rgba(126, 68, 238, 0.15)'
+                  }}
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}

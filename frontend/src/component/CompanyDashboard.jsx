@@ -64,6 +64,7 @@ const CompanyDashboard = () => {
     if (user && user.role === 'PARENT' && user.company) {
       dispatch(fetchCompanyProfile(user.company));
       dispatch(fetchEmployees());
+      dispatch(fetchDepartments());
     } else if (user && user.role !== 'PARENT') {
       navigate('/dashboard'); // Redirect non-parent users
     }

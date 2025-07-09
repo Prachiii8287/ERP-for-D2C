@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     'accounts.apps.AccountsConfig',
     'companies.apps.CompaniesConfig',
     'employees.apps.EmployeesConfig',
+    'products.apps.ProductsConfig',
 ]
 
 # Debug middleware class

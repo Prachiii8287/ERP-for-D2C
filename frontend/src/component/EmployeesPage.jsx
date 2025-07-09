@@ -52,10 +52,10 @@ const modalStyles = {
     headingAccent: {
       color: '#7E44EE',
       display: 'inline-block',
-      background: 'linear-gradient(45deg, #7E44EE, #9B59B6)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text'
+      background: 'none',
+      WebkitBackgroundClip: 'unset',
+      WebkitTextFillColor: 'unset',
+      backgroundClip: 'unset'
     },
     closeButton: {
       background: 'none',
@@ -131,7 +131,8 @@ const modalStyles = {
       flex: 1
     },
     primaryButton: {
-      background: 'linear-gradient(135deg, #7E44EE 0%, #8E44AD 100%)',
+      background: 'none',
+      backgroundColor: '#7E44EE',
       color: 'white',
       boxShadow: '0 4px 12px rgba(126, 68, 238, 0.2)'
     },
@@ -633,7 +634,10 @@ const EditEmployeeModal = ({ isOpen, onClose, employee, departments, onEmployeeU
           </div>
           <div style={styles.fieldGroup}>
             <label style={styles.label}>Active</label>
-            <input type="checkbox" name="is_active" checked={formData.is_active} onChange={handleChange} />
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <input type="checkbox" name="is_active" checked={formData.is_active} onChange={handleChange} />
+              <span style={{ fontSize: 15 }}>Active</span>
+            </div>
           </div>
           {error && <div style={styles.error}>{error}</div>}
           <div style={styles.buttonGroup}>

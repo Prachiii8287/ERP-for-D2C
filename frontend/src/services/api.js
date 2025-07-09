@@ -84,6 +84,35 @@ export const employeeAPI = {
   deleteEmployee: (employeeId) => apiClient.delete(`/employees/api/employees/${employeeId}/`),
 };
 
+// Product API calls
+export const productsAPI = {
+  // Products
+  getProducts: () => apiClient.get('/api/products/'),
+  getProduct: (id) => apiClient.get(`/api/products/${id}/`),
+  createProduct: (data) => apiClient.post('/api/products/', data),
+  updateProduct: (id, data) => apiClient.patch(`/api/products/${id}/`, data),
+  deleteProduct: (id) => apiClient.delete(`/api/products/${id}/`),
+
+  // Categories
+  getCategories: () => apiClient.get('/api/categories/'),
+  createCategory: (data) => apiClient.post('/api/categories/', data),
+  updateCategory: (id, data) => apiClient.patch(`/api/categories/${id}/`, data),
+  deleteCategory: (id) => apiClient.delete(`/api/categories/${id}/`),
+
+  // Vendors
+  getVendors: () => apiClient.get('/api/vendors/'),
+  createVendor: (data) => apiClient.post('/api/vendors/', data),
+  updateVendor: (id, data) => apiClient.patch(`/api/vendors/${id}/`, data),
+  deleteVendor: (id) => apiClient.delete(`/api/vendors/${id}/`),
+
+  // Variants
+  getVariants: () => apiClient.get('/api/variants/'),
+  getVariant: (id) => apiClient.get(`/api/variants/${id}/`),
+  createVariant: (data) => apiClient.post('/api/variants/', data),
+  updateVariant: (id, data) => apiClient.patch(`/api/variants/${id}/`, data),
+  deleteVariant: (id) => apiClient.delete(`/api/variants/${id}/`),
+};
+
 // Generic API helper
 export const apiCall = async (apiFunction, ...args) => {
   try {

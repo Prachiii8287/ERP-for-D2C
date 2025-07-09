@@ -17,6 +17,7 @@ urlpatterns = [
     # App URLs
     path('companies/', include('companies.urls')),
     path('employees/', include('employees.urls')),
+    path('api/', include('products.urls')),
 ]
 
 # Debug toolbar and static/media files in development

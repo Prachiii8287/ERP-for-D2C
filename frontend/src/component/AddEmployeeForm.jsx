@@ -74,7 +74,11 @@ const AddEmployeeForm = () => {
       width: '100%',
       maxWidth: '700px',
       border: '1px solid #e8ecf0',
-      position: 'relative'
+      position: 'relative',
+      margin: '0 auto',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
     },
     cardBefore: {
       content: '""',
@@ -93,7 +97,10 @@ const AddEmployeeForm = () => {
       textAlign: 'center',
       marginBottom: '40px',
       margin: '0 0 40px 0',
-      position: 'relative'
+      position: 'relative',
+      display: 'block',
+      marginLeft: 'auto',
+      marginRight: 'auto',
     },
     headingAccent: {
       color: '#6A0DAD',
@@ -168,7 +175,7 @@ const AddEmployeeForm = () => {
     <div style={styles.container}>
       <div style={styles.card}>
         <h1 style={styles.heading}>
-          <span style={styles.headingAccent}>Add Employee</span>
+          <span style={styles.headingAccent}>{window.location.pathname.includes('edit') ? 'Edit Employee' : 'Add Employee'}</span>
         </h1>
         <form onSubmit={handleSubmit} style={styles.form}>
           <div style={styles.fieldGroup}>
