@@ -1,11 +1,13 @@
 // frontend/src/component/CompanyDashboard.jsx
 import React, { useState, useEffect } from 'react';
-import { Building2, MapPin, Edit, Shield, Users, BarChart3, UserPlus, UserCog, Settings, X, Eye, EyeOff } from 'lucide-react';
+import { Building2, MapPin, Edit, Shield, Users, BarChart3, UserPlus, UserCog, Settings, X, Eye, EyeOff, ShoppingBag, Truck } from 'lucide-react';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchCompanyProfile, fetchAdminUsers, createAdminUser, updateCompanyProfile } from '../store/companySlice';
 import { fetchEmployees, createEmployee } from '../store/employeeSlice';
 import { fetchDepartments } from '../store/companySlice';
+import ShopifyConnectModal from './ShopifyConnectModal';
+import ShiprocketConnectModal from './ShiprocketConnectModal';
 
 const CompanyDashboard = () => {
   const navigate = useNavigate();
@@ -13,10 +15,25 @@ const CompanyDashboard = () => {
   
   // Redux state
   const { user } = useSelector((state) => state.auth);
-  const { profile: companyData, loading, errors } = useSelector((state) => state.company);
-  const { employees } = useSelector((state) => state.employees);
-  const { departments } = useSelector((state) => state.company);
+  const {
+    profile: companyData = null,
+    loading: companyLoadingRaw = {},
+    errors: companyErrorsRaw = {},
+    departments = []
+  } = useSelector((state) => state.company) || {};
+
+  // Normalise loading/errors which sometimes get overwritten as boolean/null by extra reducers
+  const companyLoading =
+    typeof companyLoadingRaw === 'object' && companyLoadingRaw !== null
+      ? companyLoadingRaw
+      : { profile: companyLoadingRaw };
+  const companyErrors =
+    companyErrorsRaw && typeof companyErrorsRaw === 'object'
+      ? companyErrorsRaw
+      : { profile: companyErrorsRaw };
+  const { employees = [] } = useSelector((state) => state.employees);
   
+
   const [hoveredCard, setHoveredCard] = useState(null);
   const [hoveredButton, setHoveredButton] = useState(null);
   const [showModal, setShowModal] = useState(false);
@@ -58,6 +75,8 @@ const CompanyDashboard = () => {
   });
   const [companyModalLoading, setCompanyModalLoading] = useState(false);
   const [companyModalError, setCompanyModalError] = useState('');
+  const [showShopifyModal, setShowShopifyModal] = useState(false);
+  const [showShiprocketModal, setShowShiprocketModal] = useState(false);
 
   useEffect(() => {
     // Only fetch data if user is authenticated and is a parent user
@@ -69,6 +88,15 @@ const CompanyDashboard = () => {
       navigate('/dashboard'); // Redirect non-parent users
     }
   }, [dispatch, user, navigate]);
+
+  // Guard against missing profile data during initial load or refetching
+  if (!companyData) {
+    return (
+      <div style={{ padding: '2rem', textAlign: 'center' }}>
+        Loading company data...
+      </div>
+    );
+  }
 
   const styles = {
     container: {
@@ -318,13 +346,13 @@ const CompanyDashboard = () => {
   };
 
   // Loading state
-  if (loading.profile) {
+  if (companyLoading && companyLoading.profile) {
     return <div style={styles.loading}>Loading company data...</div>;
   }
 
   // Error state
-  if (errors.profile) {
-    return <div style={styles.error}>Error: {errors.profile}</div>;
+  if (companyErrors && companyErrors.profile) {
+    return <div style={styles.error}>Error: {companyErrors.profile}</div>;
   }
 
   // No company data
@@ -495,6 +523,11 @@ const CompanyDashboard = () => {
     navigate('/departments');
   };
 
+  // Show loading until profile is available
+  if (!companyData) {
+    return <div style={{ padding: '2rem', textAlign: 'center' }}>Loading company data...</div>;
+  }
+
   if (user?.role !== 'PARENT') {
     return <Navigate to="/" />;
   }
@@ -588,35 +621,65 @@ const CompanyDashboard = () => {
           <div style={styles.actionBox}>
             <h3 style={styles.boxTitle}>Quick Actions</h3>
             <button 
+              onClick={() => setShowModal(true)}
               style={{
                 ...styles.actionButton,
                 ...(hoveredButton === 'admin' ? styles.actionButtonHover : {})
               }}
-              onClick={handleAddAdmin}
               onMouseEnter={() => setHoveredButton('admin')}
               onMouseLeave={() => setHoveredButton(null)}
             >
               <Shield size={20} />
               Add New Admin User
             </button>
-            <button 
+
+            <button
+              onClick={() => setShowEmployeeModal(true)}
               style={{
                 ...styles.actionButton,
                 ...(hoveredButton === 'employee' ? styles.actionButtonHover : {})
               }}
-              onClick={handleAddEmployee}
               onMouseEnter={() => setHoveredButton('employee')}
               onMouseLeave={() => setHoveredButton(null)}
             >
               <UserPlus size={20} />
               Add New Employee
             </button>
-            <button 
+
+            {/* Add new Shopify button */}
+            <button
+              onClick={() => setShowShopifyModal(true)}
+              style={{
+                ...styles.actionButton,
+                ...(hoveredButton === 'shopify' ? styles.actionButtonHover : {})
+              }}
+              onMouseEnter={() => setHoveredButton('shopify')}
+              onMouseLeave={() => setHoveredButton(null)}
+            >
+              <ShoppingBag size={20} />
+              Connect Shopify Store
+            </button>
+
+            {/* Add new Shiprocket button */}
+            <button
+              onClick={() => setShowShiprocketModal(true)}
+              style={{
+                ...styles.actionButton,
+                ...(hoveredButton === 'shiprocket' ? styles.actionButtonHover : {})
+              }}
+              onMouseEnter={() => setHoveredButton('shiprocket')}
+              onMouseLeave={() => setHoveredButton(null)}
+            >
+              <Truck size={20} />
+              Connect Shiprocket Account
+            </button>
+
+            <button
+              onClick={() => setShowCompanyModal(true)}
               style={{
                 ...styles.actionButton,
                 ...(hoveredButton === 'settings' ? styles.actionButtonHover : {})
               }}
-              onClick={handleUpdateSettings}
               onMouseEnter={() => setHoveredButton('settings')}
               onMouseLeave={() => setHoveredButton(null)}
             >
@@ -876,6 +939,26 @@ const CompanyDashboard = () => {
           </div>
         </div>
       )}
+
+      {/* Shopify Connect Modal */}
+      <ShopifyConnectModal
+        isOpen={showShopifyModal}
+        onClose={() => setShowShopifyModal(false)}
+        onSuccess={() => {
+          setShowShopifyModal(false);
+          // Add any success handling here
+        }}
+      />
+
+      {/* Shiprocket Connect Modal */}
+      <ShiprocketConnectModal
+        isOpen={showShiprocketModal}
+        onClose={() => setShowShiprocketModal(false)}
+        onSuccess={() => {
+          setShowShiprocketModal(false);
+          // Add any success handling here
+        }}
+      />
     </div>
   );
 };

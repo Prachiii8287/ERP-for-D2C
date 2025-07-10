@@ -131,6 +131,19 @@ export const deleteAdminUser = createAsyncThunk(
   }
 );
 
+// Add this new thunk action
+export const connectShopify = createAsyncThunk(
+  'company/connectShopify',
+  async (credentials, { rejectWithValue }) => {
+    try {
+      const response = await companyAPI.connectShopify(credentials);
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'Failed to connect to Shopify');
+    }
+  }
+);
+
 const initialState = {
   profile: null,
   departments: [],
@@ -145,6 +158,7 @@ const initialState = {
     departments: null,
     adminUsers: null,
   },
+  shopifyConnected: false,
 };
 
 const companySlice = createSlice({
@@ -251,6 +265,25 @@ const companySlice = createSlice({
       
       .addCase(deleteAdminUser.fulfilled, (state, action) => {
         state.adminUsers = state.adminUsers.filter(user => user.id !== action.payload);
+      })
+      
+      // Add these cases for Shopify connection
+      .addCase(connectShopify.pending, (state) => {
+        state.loading = true;
+        state.errors = null;
+      })
+      .addCase(connectShopify.fulfilled, (state, action) => {
+        state.loading = false;
+        state.profile = {
+          ...state.profile,
+          shopify_domain: action.payload.shopify_domain,
+          shopify_access_token: action.payload.shopify_access_token
+        };
+        state.shopifyConnected = true;
+      })
+      .addCase(connectShopify.rejected, (state, action) => {
+        state.loading = false;
+        state.errors = action.payload;
       });
   },
 });

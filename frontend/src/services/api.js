@@ -4,7 +4,7 @@ import store from '../store/store';
 import { logout } from '../store/authSlice';
 
 // Create axios instance with base configuration
-const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.REACT_APP_API_URL || 'http://127.0.0.1:8000';
 
 const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -51,10 +51,18 @@ export const authAPI = {
   updateProfile: (userData) => apiClient.patch('/accounts/api/user/', userData),
 };
 
+// Customer API calls
+export const customerAPI = {
+  getCustomers: () => apiClient.get('/companies/api/customers/'),
+  syncShopifyCustomers: () => apiClient.post('/companies/api/customers/sync-shopify/'),
+  pushCustomerToShopify: (customerId) => apiClient.post(`/companies/api/customers/${customerId}/push_to_shopify/`),
+  updateCustomer: (customerId, data) => apiClient.put(`/companies/api/customers/${customerId}/`, data),
+};
+
 // Company API calls
 export const companyAPI = {
-  getCompanyProfile: (companyId) => apiClient.get(`/companies/api/profile/${companyId}/`),
-  updateCompany: (companyId, data) => apiClient.patch(`/companies/api/profile/${companyId}/`, data),
+  getCompanyProfile: (companyId) => apiClient.get(`/companies/api/companies/${companyId}/`),
+  updateCompany: (companyId, data) => apiClient.patch(`/companies/api/companies/${companyId}/`, data),
   registerCompany: (companyData) => apiClient.post('/companies/api/register/', companyData),
   
   // Departments
@@ -73,6 +81,7 @@ export const companyAPI = {
     apiClient.post('/companies/api/users/send-delete-otp/', { target_user_id }),
   verifyUserDeleteOTP: (target_user_id, otp) =>
     apiClient.post('/companies/api/users/verify-delete-otp/', { target_user_id, otp }),
+  connectShopify: (credentials) => apiClient.post('/companies/api/connect-shopify/', credentials),
 };
 
 // Employee API calls
@@ -92,6 +101,18 @@ export const productsAPI = {
   createProduct: (data) => apiClient.post('/api/products/', data),
   updateProduct: (id, data) => apiClient.patch(`/api/products/${id}/`, data),
   deleteProduct: (id) => apiClient.delete(`/api/products/${id}/`),
+  syncShopifyProducts: () => apiClient.post('/api/products/sync_shopify/'),
+  pushProductToShopify: async (productId) => {
+    try {
+      const response = await apiClient.post(`/api/products/${productId}/push_to_shopify/`);
+      return response.data; // This will contain {success: true/false, error: string}
+    } catch (error) {
+      if (error.response?.data) {
+        return error.response.data; // Return the error response from the server
+      }
+      return { success: false, error: error.message || 'Failed to push product to Shopify' };
+    }
+  },
 
   // Categories
   getCategories: () => apiClient.get('/api/categories/'),

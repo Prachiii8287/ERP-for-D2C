@@ -1,579 +1,528 @@
-import React, { useState } from 'react';
-import { Download, Upload } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Search, Download, Upload, Edit } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCustomers, syncShopifyCustomers, pushCustomerToShopify, updateCustomer, clearError, clearSyncStatus, setError, setSyncStatus } from '../store/customersSlice';
+import EditCustomerModal from './EditCustomerModal';
 
 const CustomerPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  
-  // Expanded customer data with 8 customers
-  const [customers] = useState([
-    {
-      id: 1,
-      firstName: "Thomas",
-      lastName: "Shelby",
-      email: "thomas.shelby@example.com",
-      phone: "+1-555-123-4567",
-      numberOfOrders: 5,
-      amountSpent: {
-        amount: 1299.99,
-        currencyCode: "Rs."
-      },
-      createdAt: "2023-01-15T10:30:00Z",
-      updatedAt: "2024-03-10T14:45:00Z",
-      note: "VIP customer, prefers express shipping",
-      verifiedEmail: true,
-      validEmailAddress: true,
-      tags: ["VIP", "Frequent Buyer", "Express Shipping"],
-      lifetimeDuration: "2 years 3 months",
-      defaultAddress: "123 Main St, New York, NY 10001",
-      addresses: ["123 Main St, New York, NY 10001", "456 Oak Ave, Brooklyn, NY 11201"]
-    },
-    {
-      id: 2,
-      firstName: "Arthur",
-      lastName: "Shelby",
-      email: "arthur.shelby@example.com",
-      phone: "+1-555-987-6543",
-      numberOfOrders: 12,
-      amountSpent: {
-        amount: 2599.50,
-        currencyCode: "Rs."
-      },
-      createdAt: "2022-08-22T09:15:00Z",
-      updatedAt: "2024-02-28T16:20:00Z",
-      note: "Regular customer, likes seasonal promotions",
-      verifiedEmail: true,
-      validEmailAddress: true,
-      tags: ["Regular", "Seasonal Buyer"],
-      lifetimeDuration: "1 year 8 months",
-      defaultAddress: "789 Pine St, Los Angeles, CA 90210",
-      addresses: ["789 Pine St, Los Angeles, CA 90210"]
-    },
-    {
-      id: 3,
-      firstName: "Polly",
-      lastName: "Gray",
-      email: "polly.gray@example.com",
-      phone: "+1-555-456-7890",
-      numberOfOrders: 3,
-      amountSpent: {
-        amount: 599.25,
-        currencyCode: "Rs."
-      },
-      createdAt: "2023-11-05T13:45:00Z",
-      updatedAt: "2024-01-15T11:30:00Z",
-      note: "New customer, interested in tech products",
-      verifiedEmail: false,
-      validEmailAddress: true,
-      tags: ["New Customer", "Tech Enthusiast"],
-      lifetimeDuration: "3 months",
-      defaultAddress: "321 Elm St, Chicago, IL 60601",
-      addresses: ["321 Elm St, Chicago, IL 60601", "654 Maple Ave, Chicago, IL 60602"]
-    },
-    {
-      id: 4,
-      firstName: "Michael",
-      lastName: "Gray",
-      email: "michael.gray@example.com",
-      phone: "+1-555-234-5678",
-      numberOfOrders: 8,
-      amountSpent: {
-        amount: 1850.75,
-        currencyCode: "Rs."
-      },
-      createdAt: "2023-03-20T11:22:00Z",
-      updatedAt: "2024-03-05T09:30:00Z",
-      note: "Premium customer, always orders in bulk",
-      verifiedEmail: true,
-      validEmailAddress: true,
-      tags: ["Premium", "Bulk Orders", "Loyal"],
-      lifetimeDuration: "1 year 1 month",
-      defaultAddress: "555 Broadway, San Francisco, CA 94102",
-      addresses: ["555 Broadway, San Francisco, CA 94102", "777 Market St, San Francisco, CA 94103"]
-    },
-    {
-      id: 5,
-      firstName: "John",
-      lastName: "Shelby",
-      email: "john.shelby@example.com",
-      phone: "+1-555-345-6789",
-      numberOfOrders: 15,
-      amountSpent: {
-        amount: 3250.00,
-        currencyCode: "Rs."
-      },
-      createdAt: "2022-05-10T14:15:00Z",
-      updatedAt: "2024-03-12T16:45:00Z",
-      note: "Long-time customer, excellent payment history",
-      verifiedEmail: true,
-      validEmailAddress: true,
-      tags: ["VIP", "Long-term", "Excellent Credit"],
-      lifetimeDuration: "2 years 10 months",
-      defaultAddress: "999 Houston St, Austin, TX 78701",
-      addresses: ["999 Houston St, Austin, TX 78701"]
-    },
-    {
-      id: 6,
-      firstName: "Emily",
-      lastName: "Davis",
-      email: "emily.davis@example.com",
-      phone: "+1-555-567-8901",
-      numberOfOrders: 2,
-      amountSpent: {
-        amount: 299.99,
-        currencyCode: "Rs."
-      },
-      createdAt: "2024-01-08T08:45:00Z",
-      updatedAt: "2024-02-20T12:30:00Z",
-      note: "New customer, small initial orders",
-      verifiedEmail: true,
-      validEmailAddress: true,
-      tags: ["New Customer", "Small Orders"],
-      lifetimeDuration: "2 months",
-      defaultAddress: "246 Cedar Ave, Seattle, WA 98101",
-      addresses: ["246 Cedar Ave, Seattle, WA 98101", "135 Pine St, Seattle, WA 98102"]
-    },
-    {
-      id: 7,
-      firstName: "David",
-      lastName: "Wilson",
-      email: "david.wilson@example.com",
-      phone: "+1-555-678-9012",
-      numberOfOrders: 7,
-      amountSpent: {
-        amount: 1125.50,
-        currencyCode: "Rs."
-      },
-      createdAt: "2023-07-12T13:20:00Z",
-      updatedAt: "2024-02-15T10:15:00Z",
-      note: "Corporate account, bulk purchasing",
-      verifiedEmail: true,
-      validEmailAddress: true,
-      tags: ["Corporate", "Bulk", "B2B"],
-      lifetimeDuration: "8 months",
-      defaultAddress: "888 Corporate Blvd, Dallas, TX 75201",
-      addresses: ["888 Corporate Blvd, Dallas, TX 75201", "333 Business Center Dr, Dallas, TX 75202"]
-    },
-    {
-      id: 8,
-      firstName: "Lisa",
-      lastName: "Anderson",
-      email: "lisa.anderson@example.com",
-      phone: "+1-555-789-0123",
-      numberOfOrders: 9,
-      amountSpent: {
-        amount: 1775.25,
-        currencyCode: "Rs."
-      },
-      createdAt: "2023-02-28T15:30:00Z",
-      updatedAt: "2024-03-08T14:20:00Z",
-      note: "Fashion enthusiast, seasonal buyer",
-      verifiedEmail: false,
-      validEmailAddress: true,
-      tags: ["Fashion", "Seasonal", "Trendy"],
-      lifetimeDuration: "1 year 1 month",
-      defaultAddress: "777 Fashion Ave, Miami, FL 33101",
-      addresses: ["777 Fashion Ave, Miami, FL 33101"]
-    }
-  ]);
+  const [selectedCustomer, setSelectedCustomer] = useState(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const dispatch = useDispatch();
+
+  const {
+    items: customers = [],
+    loading,
+    error,
+    syncStatus,
+    metadata
+  } = useSelector((state) => state.customers);
+
+  const [isSyncing, setIsSyncing] = useState(false);
 
   // Filter customers based on search term
-  const filteredCustomers = customers.filter(customer => {
+  const filteredCustomers = Array.isArray(customers) ? customers.filter(customer => {
     const searchLower = searchTerm.toLowerCase();
     return (
-      customer.id.toString().includes(searchLower) ||
-      customer.firstName.toLowerCase().includes(searchLower) ||
-      customer.lastName.toLowerCase().includes(searchLower) ||
-      customer.email.toLowerCase().includes(searchLower) ||
-      customer.phone.includes(searchLower) ||
-      customer.numberOfOrders.toString().includes(searchLower) ||
-      customer.amountSpent.amount.toString().includes(searchLower) ||
-      customer.amountSpent.currencyCode.toLowerCase().includes(searchLower) ||
-      customer.note.toLowerCase().includes(searchLower) ||
-      customer.tags.some(tag => tag.toLowerCase().includes(searchLower)) ||
-      customer.lifetimeDuration.toLowerCase().includes(searchLower) ||
-      customer.defaultAddress.toLowerCase().includes(searchLower) ||
-      customer.addresses.some(address => address.toLowerCase().includes(searchLower))
+      customer.id?.toString().includes(searchLower) ||
+      (customer.first_name && customer.first_name.toLowerCase().includes(searchLower)) ||
+      (customer.last_name && customer.last_name.toLowerCase().includes(searchLower)) ||
+      (customer.email && customer.email.toLowerCase().includes(searchLower)) ||
+      (customer.phone && customer.phone.includes(searchLower))
     );
-  });
+  }) : [];
 
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
+  useEffect(() => {
+    console.log('Current customers in state:', customers); // Debug log
+    console.log('Loading state:', loading); // Debug log
+    console.log('Error state:', error); // Debug log
+    dispatch(fetchCustomers());
+  }, [dispatch]);
+
+  // Clear messages after 5 seconds
+  useEffect(() => {
+    if (syncStatus || error) {
+      const timer = setTimeout(() => {
+        dispatch(clearSyncStatus());
+        dispatch(clearError());
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [syncStatus, error, dispatch]);
+
+const formatDate = (dateString) => {
+    if (!dateString) return '';
+    return new Date(dateString).toLocaleString('en-US', {
       year: 'numeric',
       month: 'short',
-      day: 'numeric',
+      day: '2-digit',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
-  // SAP-inspired styles with purple theme
-  const containerStyle = {
-    padding: '24px',
-    fontFamily: '"Segoe UI", Tahoma, Geneva, Verdana, sans-serif',
-    backgroundColor: '#f8f9fa',
-    minHeight: '100vh',
-    color: '#333'
+  const handleFetchShopify = async () => {
+    try {
+      setIsSyncing(true);
+      console.log('Starting Shopify sync...');
+      const result = await dispatch(syncShopifyCustomers()).unwrap();
+      console.log('Sync result:', result);
+      
+      // Fetch customers after successful sync
+      if (result.success) {
+        console.log('Sync successful, fetching updated customers...');
+        await dispatch(fetchCustomers());
+      }
+    } catch (error) {
+      console.error('Error syncing Shopify customers:', error);
+      // Show error to user
+      dispatch(setError(error.message || 'Failed to sync customers from Shopify'));
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
-  const headerContainerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: '32px',
-    padding: '16px 24px',
-    backgroundColor: '#7E44EE',
-    borderRadius: '8px',
-    boxShadow: '0 4px 12px rgba(126, 68, 238, 0.15)'
+  const handlePushAllToShopify = async () => {
+    try {
+      setIsSyncing(true);
+      const results = {
+        success: [],
+        failed: []
+      };
+
+      for (const customer of customers) {
+        try {
+          await dispatch(pushCustomerToShopify(customer.id)).unwrap();
+          console.log(`Successfully pushed customer ${customer.id} to Shopify`);
+          results.success.push(customer.id);
+        } catch (error) {
+          console.error(`Failed to push customer ${customer.id} to Shopify:`, error);
+          results.failed.push({
+            id: customer.id,
+            error: error.message || 'Unknown error'
+          });
+        }
+      }
+
+      // Show summary message
+      const message = `Push completed: ${results.success.length} customers pushed successfully` +
+        (results.failed.length > 0 ? `, ${results.failed.length} failed` : '');
+      
+      // Log detailed results for debugging
+      console.log('Push all results:', results);
+
+      // Refresh the customer list after pushing all
+      await dispatch(fetchCustomers());
+
+      // Show success/failure message
+      if (results.failed.length > 0) {
+        dispatch(setError(message));
+      } else {
+        dispatch(setSyncStatus(message));
+      }
+    } catch (error) {
+      console.error('Error in push all operation:', error);
+      dispatch(setError('Failed to complete push all operation'));
+    } finally {
+      setIsSyncing(false);
+    }
   };
 
-  const headerStyle = {
-    color: 'white',
-    fontSize: '28px',
-    fontWeight: '600',
-    margin: 0,
-    letterSpacing: '0.5px'
+  const handlePushToShopify = async (customerId) => {
+    try {
+      await dispatch(pushCustomerToShopify(customerId)).unwrap();
+      console.log(`Successfully pushed customer ${customerId} to Shopify`);
+      // Refresh the customer list after pushing
+      await dispatch(fetchCustomers());
+    } catch (error) {
+      console.error(`Failed to push customer ${customerId} to Shopify:`, error);
+    }
   };
 
-  const headerSubtitleStyle = {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: '14px',
-    margin: 0,
-    fontWeight: '400'
+  const handleEditClick = (customer) => {
+    setSelectedCustomer(customer);
+    setIsEditModalOpen(true);
   };
 
-  const toolbarStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    marginBottom: '8px',
-    padding: '10px 16px',
-    backgroundColor: 'white',
-    borderRadius: '8px',
-    boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
-    border: '1px solid #e1e5e9',
-    position: 'sticky',
-    top: 0,
-    zIndex: 20,
-    width: 'fit-content'
-  };
+  const handleEditSave = async (formData) => {
+    try {
+      console.log('Selected Customer:', selectedCustomer); // Debug log
+      console.log('Form Data:', formData); // Debug log
 
-  const searchContainerStyle = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px'
-  };
+      // Properly handle tags - ensure it's a JSON string
+      const tags = formData.tags ? JSON.stringify(formData.tags.split(',').map(tag => tag.trim()).filter(tag => tag)) : '[]';
 
-  const searchInputStyle = {
-    padding: '8px 12px',
-    fontSize: '14px',
-    border: '2px solid #e1e5e9',
-    borderRadius: '6px',
-    width: '280px',
-    outline: 'none',
-    transition: 'all 0.2s ease',
-    fontFamily: 'inherit'
-  };
+      // Format the address properly
+      const formattedAddress = {
+        address1: formData.default_address_line || '',
+        city: formData.city || '',
+        province: formData.state || '',
+        country: formData.country || '',
+      };
 
-  const searchLabelStyle = {
-    fontSize: '14px',
-    fontWeight: '600',
-    color: '#333',
-    minWidth: '50px'
-  };
+      // Create addresses array with the formatted address
+      const addresses = [formattedAddress];
 
-  const tableContainerStyle = {
-    backgroundColor: 'white',
-    borderRadius: '8px',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.08)',
-    overflow: 'hidden',
-    border: '1px solid #e1e5e9'
-  };
+      // Preserve the original customer data and merge with form updates
+      const updateData = {
+        id: selectedCustomer.id,
+        shopify_customer_id: selectedCustomer.shopify_customer_id,
+        first_name: formData.first_name || '',
+        last_name: formData.last_name || '',
+        email: formData.email || '',
+        phone: formData.phone || '',
+        note: formData.note || '',
+        tags: tags, // Now it's a JSON string
+        city: formData.city || '',
+        state: formData.state || '',
+        country: formData.country || '',
+        default_address_line: formData.default_address_line || '',
+        default_address_formatted_area: formData.default_address_formatted_area || '',
+        addresses: addresses,
+        // Preserve read-only fields
+        number_of_orders: selectedCustomer.number_of_orders,
+        amount_spent: selectedCustomer.amount_spent,
+        currency_code: selectedCustomer.currency_code,
+        verified_email: selectedCustomer.verified_email,
+        created_at: selectedCustomer.created_at,
+        updated_at: selectedCustomer.updated_at
+      };
 
-  const tableStyle = {
-    width: '100%',
-    borderCollapse: 'collapse',
-    fontSize: '13px',
-    tableLayout: 'fixed'
-  };
+      console.log('Update Data:', updateData); // Debug log
 
-  const thStyle = {
-    backgroundColor: '#7E44EE',
-    color: 'white',
-    padding: '4px 3px',
-    textAlign: 'left',
-    fontWeight: '600',
-    fontSize: '11px',
-    letterSpacing: '0.3px',
-    textTransform: 'uppercase',
-    borderRight: '1px solid rgba(255, 255, 255, 0.1)',
-    borderBottom: '1px solid rgba(255, 255, 255, 0.1)',
-    position: 'sticky',
-    top: 0,
-    zIndex: 10,
-    height: '22px'
-  };
+      const result = await dispatch(updateCustomer(updateData)).unwrap();
+      console.log('Update Result:', result); // Debug log
 
-  const tdStyle = {
-    padding: '3px 3px',
-    borderBottom: '1px solid #d0d7de',
-    borderRight: '1px solid #d0d7de',
-    verticalAlign: 'top',
-    fontSize: '11px',
-    lineHeight: '1.3',
-    height: '22px',
-    backgroundColor: '#ffffff'
-  };
-
-  // Column widths optimized for SAP-style layout
-  const columnWidths = {
-    id: '70px',
-    name: '130px',
-    email: '190px',
-    phone: '120px',
-    orders: '70px',
-    amount: '100px',
-    created: '110px',
-    updated: '110px',
-    status: '90px',
-    tags: '150px',
-    duration: '100px',
-    addresses: '210px',
-    notes: '170px'
-  };
-
-  const rowStyle = (index) => ({
-    backgroundColor: index % 2 === 0 ? '#ffffff' : '#f8f9fa',
-    transition: 'background-color 0.2s ease',
-    cursor: 'pointer',
-    height: '22px'
-  });
-
-  const badgeStyle = {
-    display: 'inline-block',
-    padding: '1px 3px',
-    margin: '1px',
-    backgroundColor: 'rgba(126, 68, 238, 0.1)',
-    color: '#7E44EE',
-    borderRadius: '10px',
-    fontSize: '8px',
-    fontWeight: '600',
-    border: '1px solid rgba(126, 68, 238, 0.2)'
-  };
-
-  const statusBadgeStyle = (status) => ({
-    display: 'inline-block',
-    padding: '1px 2px',
-    borderRadius: '2px',
-    fontSize: '7px',
-    fontWeight: '600',
-    backgroundColor: status ? '#28a745' : '#dc3545',
-    color: 'white',
-    minWidth: '15px',
-    textAlign: 'center',
-    border: '1px solid',
-    borderColor: status ? '#1e7e34' : '#bd2130'
-  });
-
-  const addressStyle = {
-    fontSize: '9px',
-    color: '#666',
-    marginBottom: '1px',
-    lineHeight: '1.1'
-  };
-
-  const nameStyle = {
-    fontWeight: '600',
-    fontSize: '14px',
-    color: '#333',
-    marginBottom: '2px'
-  };
-
-  const emailStyle = {
-    fontSize: '12px',
-    color: '#666',
-    marginBottom: '4px'
-  };
-
-  const amountStyle = {
-    fontWeight: '600',
-    fontSize: '14px',
-    color: '#7E44EE'
-  };
-
-  const currencyStyle = {
-    fontSize: '11px',
-    color: '#999',
-    fontWeight: '400'
-  };
-
-  // Add styles for the fixed button container and buttons
-  const shopifyButtonContainerStyle = {
-    position: 'fixed',
-    top: '32px', // adjust as needed
-    right: '40px', // adjust as needed
-    display: 'flex',
-    gap: '12px',
-    zIndex: 200
-  };
-
-  const shopifyButtonStyle = {
-    padding: '8px 18px',
-    backgroundColor: '#7E44EE',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    fontWeight: '600',
-    fontSize: '14px',
-    cursor: 'pointer',
-    boxShadow: '0 2px 8px rgba(126, 68, 238, 0.08)',
-    transition: 'background 0.2s',
-    outline: 'none',
-    whiteSpace: 'nowrap'
+      setIsEditModalOpen(false);
+      setSelectedCustomer(null);
+      // Refresh the customer list
+      dispatch(fetchCustomers());
+    } catch (error) {
+      console.error('Error updating customer:', error);
+      if (error.response) {
+        console.error('Response data:', error.response.data);
+        console.error('Response status:', error.response.status);
+      }
+    }
   };
 
   return (
-    <div style={containerStyle}>
-      {/* Fixed Shopify Buttons */}
-      <div style={shopifyButtonContainerStyle}>
-        <button style={shopifyButtonStyle}>
-          <Download size={16} style={{ marginRight: 8 }} />
-          Fetch from Shopify
-        </button>
-        <button style={shopifyButtonStyle}>
-          <Upload size={16} style={{ marginRight: 8 }} />
-          Push to Shopify
-        </button>
-      </div>
-      <div style={toolbarStyle}>
-        <div style={searchContainerStyle}>
-          <label style={searchLabelStyle}>Filter:</label>
+    <div style={{
+      height: '100vh',
+      backgroundColor: '#f8f9fa',
+      fontFamily: 'Arial, sans-serif',
+      display: 'flex',
+      flexDirection: 'column',
+      overflow: 'hidden' // Prevent outer container from scrolling
+    }}>
+      {/* Fixed Content Container */}
+      <div style={{
+        padding: '20px',
+        width: '100%',
+        flexShrink: 0
+      }}>
+        {/* Controls Row */}
+        <div style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '20px',
+          gap: '20px',
+          width: '100%'
+        }}>
+          {/* Search Filter */}
+          <div style={{
+            position: 'relative',
+            flex: 1,
+            maxWidth: '400px'
+          }}>
+            <Search style={{
+              position: 'absolute',
+              left: '12px',
+              top: '50%',
+              transform: 'translateY(-50%)',
+              color: '#7E44EE',
+              width: '18px',
+              height: '18px'
+            }} />
           <input
             type="text"
-            placeholder="Search customers by any field..."
+              placeholder="Search customers..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={searchInputStyle}
-            onFocus={(e) => e.target.style.borderColor = '#7E44EE'}
-            onBlur={(e) => e.target.style.borderColor = '#e1e5e9'}
-          />
+              style={{
+                width: '100%',
+                padding: '12px 12px 12px 45px',
+                border: '2px solid #7E44EE',
+                borderRadius: '6px',
+                fontSize: '14px',
+                outline: 'none',
+                backgroundColor: 'white'
+              }}
+            />
+          </div>
+
+          {/* Shopify Sync Buttons */}
+          <div style={{ display: 'flex', gap: '12px' }}>
+            <button
+              onClick={handleFetchShopify}
+              disabled={loading || isSyncing}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                backgroundColor: loading || isSyncing ? '#9B71EE' : '#7E44EE',
+                color: 'white',
+                border: 'none',
+                padding: '12px 20px',
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                cursor: loading || isSyncing ? 'not-allowed' : 'pointer',
+                transition: 'background-color 0.2s'
+              }}
+            >
+              <Download size={18} />
+              {isSyncing ? 'Syncing...' : 'Fetch from Shopify'}
+            </button>
+
+            <button
+              onClick={handlePushAllToShopify}
+              disabled={loading || !customers.length}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+                backgroundColor: loading || !customers.length ? '#9B71EE' : '#7E44EE',
+                color: 'white',
+                border: 'none',
+                padding: '12px 20px',
+                borderRadius: '6px',
+                fontSize: '14px',
+                fontWeight: 'bold',
+                cursor: loading || !customers.length ? 'not-allowed' : 'pointer',
+                transition: 'background-color 0.2s'
+              }}
+            >
+              <Upload size={18} />
+              Push All to Shopify
+            </button>
+          </div>
         </div>
+
+        {/* Success/Error Messages */}
+        {(syncStatus || error) && (
+          <div style={{
+            padding: '12px',
+            marginBottom: '20px',
+            backgroundColor: error ? '#ffebee' : '#e8f5e9',
+            color: error ? '#dc3545' : '#28a745',
+            borderRadius: '6px',
+            textAlign: 'center',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            width: '100%'
+          }}>
+            <span>
+              {error ? 
+                (typeof error === 'object' && error !== null
+                  ? (error.message || 'An error occurred') 
+                  : error || 'An error occurred')
+                : (typeof syncStatus === 'object' && syncStatus !== null
+                  ? (syncStatus.message || 'Operation successful') 
+                  : syncStatus || 'Operation successful')
+              }
+            </span>
+            <button
+              onClick={() => {
+                dispatch(clearError());
+                dispatch(clearSyncStatus());
+              }}
+              style={{
+                background: 'none',
+                border: 'none',
+                cursor: 'pointer',
+                fontSize: '18px',
+                color: error ? '#dc3545' : '#28a745'
+              }}
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {(loading || isSyncing) && (
+          <div style={{
+            padding: '40px',
+            textAlign: 'center',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            marginBottom: '20px',
+            width: '100%'
+          }}>
+            {loading ? 'Loading customers...' : 'Syncing with Shopify...'}
+          </div>
+        )}
       </div>
       
-      <div style={tableContainerStyle}>
-        <div style={{ maxHeight: '70vh', overflowY: 'auto' }}>
-          <table style={tableStyle}>
-            <thead>
-              <tr>
-                <th style={{...thStyle, width: columnWidths.id}}>ID</th>
-                <th style={{...thStyle, width: columnWidths.name}}>Name</th>
-                <th style={{...thStyle, width: columnWidths.email}}>Email</th>
-                <th style={{...thStyle, width: columnWidths.phone}}>Phone</th>
-                <th style={{...thStyle, width: columnWidths.orders}}>Orders</th>
-                <th style={{...thStyle, width: columnWidths.amount}}>Amount</th>
-                <th style={{...thStyle, width: columnWidths.created}}>Created</th>
-                <th style={{...thStyle, width: columnWidths.updated}}>Updated</th>
-                <th style={{...thStyle, width: columnWidths.status}}>Status</th>
-                <th style={{...thStyle, width: columnWidths.tags}}>Tags</th>
-                <th style={{...thStyle, width: columnWidths.duration}}>Duration</th>
-                <th style={{...thStyle, width: columnWidths.addresses}}>Addresses</th>
-                <th style={{...thStyle, width: columnWidths.notes}}>Notes</th>
-              </tr>
-            </thead>
+      {/* Scrollable Table Container */}
+      {!loading && !isSyncing && (
+        <div style={{ 
+          flex: 1,
+          minHeight: 0,
+          padding: '0 20px 20px 20px',
+          position: 'relative'
+        }}>
+          <div style={{ 
+            position: 'absolute',
+            top: 0,
+            left: '20px',
+            right: '20px',
+            bottom: 0,
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column'
+          }}>
+            <div style={{ 
+              overflowX: 'auto',
+              overflowY: 'auto',
+              flex: 1
+            }}>
+              <table style={{ 
+                width: '100%',
+                borderCollapse: 'collapse',
+                minWidth: '1000px'
+              }}>
+                <thead style={{
+                  position: 'sticky',
+                  top: 0,
+                  backgroundColor: '#7E44EE',
+                  zIndex: 1
+                }}>
+                  <tr style={{ borderBottom: '2px solid #7E44EE' }}>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>ID</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>Name</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>Email</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>Phone</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>Orders</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>Amount Spent</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>Currency</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>Verified Email</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>Address</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>City</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>State</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>Country</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>Tags</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>Note</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>Created At</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>Updated At</th>
+                    <th style={{ padding: '12px 16px', textAlign: 'left', color: 'white' }}>Actions</th>
+                  </tr>
+                </thead>
             <tbody>
-              {filteredCustomers.map((customer, index) => (
-                <tr 
-                  key={customer.id} 
-                  style={rowStyle(index)}
-                  onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#e6f3ff'}
-                  onMouseLeave={(e) => e.currentTarget.style.backgroundColor = index % 2 === 0 ? '#ffffff' : '#f8f9fa'}
-                >
-                  <td style={{...tdStyle, width: columnWidths.id, textAlign: 'center'}}>
-                    {customer.id}
+                  {filteredCustomers.length > 0 ? (
+                    filteredCustomers.map((customer) => (
+                      <tr key={customer.id} style={{ borderBottom: '1px solid #dee2e6' }}>
+                        <td style={{ padding: '12px 16px' }}>{customer.shopify_customer_id}</td>
+                        <td style={{ padding: '12px 16px' }}>
+                          {customer.first_name} {customer.last_name}
                   </td>
-                  <td style={{...tdStyle, width: columnWidths.name}}>
-                    <div style={{ fontWeight: '600', fontSize: '10px' }}>
-                      {customer.firstName} {customer.lastName}
-                    </div>
+                        <td style={{ padding: '12px 16px' }}>{customer.email}</td>
+                        <td style={{ padding: '12px 16px' }}>{customer.phone}</td>
+                        <td style={{ padding: '12px 16px' }}>{customer.number_of_orders}</td>
+                        <td style={{ padding: '12px 16px' }}>
+                          {customer.amount_spent}
                   </td>
-                  <td style={{...tdStyle, width: columnWidths.email}}>
-                    <div style={{ fontSize: '9px', marginBottom: '1px' }}>{customer.email}</div>
-                    <div style={{ display: 'flex', gap: '1px' }}>
-                      <span style={statusBadgeStyle(customer.verifiedEmail)}>
-                        {customer.verifiedEmail ? 'V' : 'U'}
-                      </span>
-                      <span style={statusBadgeStyle(customer.validEmailAddress)}>
-                        {customer.validEmailAddress ? 'OK' : 'X'}
-                      </span>
-                    </div>
+                        <td style={{ padding: '12px 16px' }}>{customer.currency_code}</td>
+                        <td style={{ padding: '12px 16px' }}>
+                          {customer.verified_email ? 'Yes' : 'No'}
                   </td>
-                  <td style={{...tdStyle, width: columnWidths.phone, fontSize: '9px'}}>
-                    {customer.phone}
+                        <td style={{ padding: '12px 16px' }}>
+                          {customer.default_address_line}
+                          {customer.default_address_formatted_area && (
+                            <br />
+                          )}
+                          {customer.default_address_formatted_area}
                   </td>
-                  <td style={{...tdStyle, width: columnWidths.orders, textAlign: 'center', fontWeight: '600'}}>
-                    {customer.numberOfOrders}
-                  </td>
-                  <td style={{...tdStyle, width: columnWidths.amount}}>
-                    <div style={{ fontWeight: '600', fontSize: '9px' }}>
-                      {customer.amountSpent.currencyCode}
-                    </div>
-                    <div style={{ fontSize: '9px' }}>
-                      {customer.amountSpent.amount.toFixed(2)}
-                    </div>
-                  </td>
-                  <td style={{...tdStyle, width: columnWidths.created, fontSize: '8px'}}>
-                    {formatDate(customer.createdAt)}
-                  </td>
-                  <td style={{...tdStyle, width: columnWidths.updated, fontSize: '8px'}}>
-                    {formatDate(customer.updatedAt)}
-                  </td>
-                  <td style={{...tdStyle, width: columnWidths.status}}>
-                    <div style={{ fontSize: '8px', lineHeight: '1.1' }}>
-                      <div style={{ marginBottom: '1px' }}>E: <span style={statusBadgeStyle(customer.verifiedEmail)}>
-                        {customer.verifiedEmail ? 'Verified' : 'Unverified'}
-                      </span></div>
-                      <div>A: <span style={statusBadgeStyle(customer.validEmailAddress)}>
-                        {customer.validEmailAddress ? 'Valid' : 'Invalid'}
-                      </span></div>
-                    </div>
-                  </td>
-                  <td style={{...tdStyle, width: columnWidths.tags}}>
-                    <div>
-                      {customer.tags.map((tag, tagIndex) => (
-                        <span key={tagIndex} style={badgeStyle}>{tag}</span>
-                      ))}
-                    </div>
-                  </td>
-                  <td style={{...tdStyle, width: columnWidths.duration, fontSize: '9px'}}>
-                    {customer.lifetimeDuration}
-                  </td>
-                  <td style={{...tdStyle, width: columnWidths.addresses}}>
-                    <div style={{ fontSize: '8px' }}>
-                      <div style={{ fontWeight: '600', marginBottom: '1px' }}>Default:</div>
-                      <div style={addressStyle}>{customer.defaultAddress}</div>
-                      {customer.addresses.length > 1 && (
-                        <>
-                          <div style={{ fontWeight: '600', marginTop: '1px', marginBottom: '1px' }}>
-                            All:
+                        <td style={{ padding: '12px 16px' }}>{customer.city}</td>
+                        <td style={{ padding: '12px 16px' }}>{customer.state}</td>
+                        <td style={{ padding: '12px 16px' }}>{customer.country}</td>
+                        <td style={{ padding: '12px 16px' }}>{customer.tags}</td>
+                        <td style={{ padding: '12px 16px' }}>{customer.note}</td>
+                        <td style={{ padding: '12px 16px' }}>{formatDate(customer.created_at)}</td>
+                        <td style={{ padding: '12px 16px' }}>{formatDate(customer.updated_at)}</td>
+                        <td style={{ padding: '12px 16px' }}>
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <button
+                              onClick={() => handleEditClick(customer)}
+                              style={{
+                                backgroundColor: '#7E44EE',
+                                color: 'white',
+                                border: 'none',
+                                padding: '6px 8px',
+                                borderRadius: '6px',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                fontSize: '12px',
+                                boxShadow: '0 2px 4px rgba(126, 68, 238, 0.2)',
+                              }}
+                            >
+                              <Edit size={14} />
+                            </button>
+                            <button
+                              onClick={() => handlePushToShopify(customer.id)}
+                              style={{
+                                backgroundColor: '#7E44EE',
+                                color: 'white',
+                                border: 'none',
+                                padding: '6px 8px',
+                                borderRadius: '6px',
+                                cursor: 'pointer',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '4px',
+                                fontSize: '12px',
+                                boxShadow: '0 2px 4px rgba(126, 68, 238, 0.2)',
+                              }}
+                            >
+                              <Upload size={14} />
+                            </button>
                           </div>
-                          {customer.addresses.slice(1).map((address, addressIndex) => (
-                            <div key={addressIndex} style={addressStyle}>
-                              {addressIndex + 2}. {address}
-                            </div>
-                          ))}
-                        </>
-                      )}
-                    </div>
-                  </td>
-                  <td style={{...tdStyle, width: columnWidths.notes}}>
-                    <div style={{ fontSize: '9px', color: '#666' }}>
-                      {customer.note}
-                    </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="17" style={{ padding: '20px', textAlign: 'center' }}>
+                        No customers found
                   </td>
                 </tr>
-              ))}
+                  )}
             </tbody>
           </table>
         </div>
       </div>
+        </div>
+      )}
+
+      {/* Edit Modal */}
+      {isEditModalOpen && (
+        <EditCustomerModal
+          customer={selectedCustomer}
+          onClose={() => {
+            setIsEditModalOpen(false);
+            setSelectedCustomer(null);
+          }}
+          onSave={handleEditSave}
+        />
+      )}
     </div>
   );
 };

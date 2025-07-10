@@ -29,6 +29,17 @@ const AddProducts = () => {
       productsAPI.getProduct(id)
         .then(res => {
           const p = res.data;
+          // Parse tags from JSON string to comma-separated string
+          let tagsString = '';
+          if (p.tags) {
+            try {
+              const tagsArray = JSON.parse(p.tags);
+              tagsString = Array.isArray(tagsArray) ? tagsArray.join(', ') : '';
+            } catch (e) {
+              // If tags is already a comma-separated string, use it as is
+              tagsString = p.tags;
+            }
+          }
           setForm({
             title: p.title || '',
             description: p.description || '',
@@ -36,7 +47,7 @@ const AddProducts = () => {
             category: p.category?.name || '',
             vendor: p.vendor?.name || '',
             stock_status: p.stock_status || 'in_stock',
-            tags: p.tags || '',
+            tags: tagsString,
             tax_rate: p.tax_rate || '',
           });
           setVariants(p.variants || []);
@@ -93,7 +104,10 @@ const AddProducts = () => {
       if (form.price) payload.price = parseFloat(form.price);
       if (form.tax_rate) payload.tax_rate = parseFloat(form.tax_rate);
       if (form.stock_status) payload.stock_status = form.stock_status;
-      if (form.tags && form.tags.trim()) payload.tags = form.tags.trim();
+      // Handle tags - send as comma-separated string, backend will handle conversion
+      if (form.tags && form.tags.trim()) {
+        payload.tags = form.tags.trim();
+      }
       if (form.category && form.category.trim()) payload.category_name = form.category.trim();
       if (form.vendor && form.vendor.trim()) payload.vendor_name = form.vendor.trim();
       // Always include variants_data, even if empty

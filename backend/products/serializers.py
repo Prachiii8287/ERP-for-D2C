@@ -3,6 +3,7 @@ from .models import ProductCategory, Vendor, Product, ProductVariant
 import uuid
 import pprint
 from django.db import IntegrityError
+import json
 
 class ProductCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,6 +41,38 @@ class ProductSerializer(serializers.ModelSerializer):
             'vendor', 'vendor_name', 'price', 'tax_rate', 'tags', 'stock_status',
             'created_at', 'updated_at', 'variants', 'variants_data'
         ]
+
+    def validate_tags(self, value):
+        """Validate and normalize tags format"""
+        if not value:
+            return None
+            
+        try:
+            # If value is already a list, convert to JSON string
+            if isinstance(value, list):
+                return json.dumps([str(tag).strip() for tag in value if str(tag).strip()])
+                
+            # If it's a string, try to parse as JSON or comma-separated
+            if isinstance(value, str):
+                value = value.strip()
+                try:
+                    # First try to parse as JSON
+                    tags = json.loads(value)
+                    if isinstance(tags, list):
+                        # Clean and filter the tags
+                        tags = [str(tag).strip() for tag in tags if str(tag).strip()]
+                        return json.dumps(tags)
+                    raise serializers.ValidationError('Tags must be a JSON array')
+                except json.JSONDecodeError:
+                    # If not JSON, treat as comma-separated
+                    tags = [tag.strip() for tag in value.split(',') if tag.strip()]
+                    return json.dumps(tags)
+                    
+        except Exception as e:
+            print(f"Tag validation error: {str(e)}")
+            raise serializers.ValidationError('Tags must be a valid JSON array or comma-separated string')
+            
+        return value
 
     def create(self, validated_data):
         print('Full validated_data received in ProductSerializer.create:')
@@ -96,9 +129,19 @@ class ProductSerializer(serializers.ModelSerializer):
             instance.vendor = vendor
         elif vendor_name == '':
             instance.vendor = None
+
+        # Handle tags validation
+        if 'tags' in validated_data:
+            validated_data['tags'] = self.validate_tags(validated_data['tags'])
+
         for attr, value in validated_data.items():
             setattr(instance, attr, value)
-        instance.save()
+        
+        try:
+            instance.save()  # Remove skip_tags_validation parameter
+        except Exception as e:
+            raise serializers.ValidationError(str(e))
+
         variant_errors = []
         if variants_data is not None:
             instance.variants.all().delete()

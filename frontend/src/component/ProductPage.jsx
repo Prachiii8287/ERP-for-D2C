@@ -3,6 +3,7 @@ import { Search, Plus, Eye, Edit, Trash2, Download, Upload } from 'lucide-react'
 import { useNavigate } from 'react-router-dom';
 import { productsAPI } from '../services/api';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 const ProductPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -13,6 +14,10 @@ const ProductPage = () => {
   const [selectedVariants, setSelectedVariants] = useState({});
   const [deleteModal, setDeleteModal] = useState({ open: false, product: null });
   const user = useSelector(state => state.auth.user);
+  const [syncLoading, setSyncLoading] = useState(false);
+  const [pushLoading, setPushLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+  const [pushingProducts, setPushingProducts] = useState(new Set());
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -79,6 +84,114 @@ const ProductPage = () => {
     }
   };
 
+  const fetchProducts = async () => {
+    try {
+      setLoading(true);
+      const response = await productsAPI.getProducts();
+      setProducts(response.data);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+      toast.error('Failed to fetch products');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSyncShopify = async () => {
+    try {
+      setSyncLoading(true);
+      const response = await productsAPI.syncShopifyProducts();
+      
+      if (response.data.success) {
+        toast.success(response.data.message);
+        // Refresh products list after sync
+        await fetchProducts();
+      } else {
+        toast.error(response.data.error || 'Sync failed');
+      }
+    } catch (error) {
+      console.error('Error syncing products:', error);
+      toast.error(error.response?.data?.error || 'Failed to sync products');
+    } finally {
+      setSyncLoading(false);
+    }
+  };
+
+  const handlePushToShopify = async (productId) => {
+    try {
+      setPushingProducts(prev => new Set([...prev, productId]));
+      const response = await productsAPI.pushProductToShopify(productId);
+      
+      if (response.success) {
+        toast.success('Product pushed to Shopify successfully');
+        // Don't refresh the entire product list, just update the status if needed
+        return true;
+      } else {
+        toast.error(response.error || 'Push failed');
+        return false;
+      }
+    } catch (error) {
+      console.error('Error pushing product:', error);
+      toast.error(error.response?.data?.error || 'Failed to push product to Shopify');
+      return false;
+    } finally {
+      setPushingProducts(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(productId);
+        return newSet;
+      });
+    }
+  };
+
+  const handlePushAllToShopify = async () => {
+    if (filteredProducts.length === 0) {
+      toast.warning('No products available to push');
+      return;
+    }
+
+    setPushLoading(true);
+    setSuccessMessage('');
+    let successCount = 0;
+    let errorCount = 0;
+
+    try {
+      // Push products in batches of 5 to avoid overwhelming the server
+      const batchSize = 5;
+      for (let i = 0; i < filteredProducts.length; i += batchSize) {
+        const batch = filteredProducts.slice(i, i + batchSize);
+        await Promise.all(batch.map(async (product) => {
+          try {
+            const success = await handlePushToShopify(product.id);
+            if (success) {
+              successCount++;
+            } else {
+              errorCount++;
+            }
+          } catch (error) {
+            console.error(`Error pushing product ${product.id}:`, error);
+            errorCount++;
+          }
+        }));
+      }
+
+      if (successCount > 0) {
+        const message = `Successfully pushed ${successCount} products to Shopify`;
+        toast.success(message);
+        setSuccessMessage(message);
+        // Only fetch products once at the end
+        await fetchProducts();
+      }
+      if (errorCount > 0) {
+        toast.error(`Failed to push ${errorCount} products`);
+      }
+    } catch (error) {
+      console.error('Error in batch push:', error);
+      toast.error('Error during batch push to Shopify');
+    } finally {
+      setPushLoading(false);
+    }
+  };
+
   if (loading) return <div style={{ padding: 40, textAlign: 'center' }}>Loading...</div>;
   if (error) return <div style={{ padding: 40, color: 'red', textAlign: 'center' }}>{error}</div>;
 
@@ -132,75 +245,95 @@ const ProductPage = () => {
         </div>
 
         {/* Add Product and Shopify Buttons */}
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <button
-            onClick={() => {/* TODO: Fetch from Shopify handler */}}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              backgroundColor: '#7E44EE',
-              color: 'white',
-              border: 'none',
-              padding: '12px 20px',
-              borderRadius: '6px',
-              fontSize: '14px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              transition: 'background-color 0.2s'
-            }}
-            onMouseOver={e => e.target.style.backgroundColor = '#6a3ac7'}
-            onMouseOut={e => e.target.style.backgroundColor = '#7E44EE'}
-          >
-            <Download size={18} />
-            Fetch from Shopify
-          </button>
-          <button
-            onClick={() => {/* TODO: Push to Shopify handler */}}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              backgroundColor: '#7E44EE',
-              color: 'white',
-              border: 'none',
-              padding: '12px 20px',
-              borderRadius: '6px',
-              fontSize: '14px',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-              transition: 'background-color 0.2s'
-            }}
-            onMouseOver={e => e.target.style.backgroundColor = '#6a3ac7'}
-            onMouseOut={e => e.target.style.backgroundColor = '#7E44EE'}
-          >
-            <Upload size={18} />
-            Push to Shopify
-          </button>
+        <div style={{ display: 'flex', gap: '12px', marginBottom: '24px' }}>
           <button
             onClick={() => navigate('/products/add')}
             style={{
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              backgroundColor: '#7E44EE',
+              background: '#7E44EE',
               color: 'white',
               border: 'none',
-              padding: '12px 20px',
-              borderRadius: '6px',
+              borderRadius: '10px',
+              padding: '12px 24px',
               fontSize: '14px',
-              fontWeight: 'bold',
+              fontWeight: '600',
               cursor: 'pointer',
-              transition: 'background-color 0.2s'
+              boxShadow: '0 2px 8px rgba(126, 68, 238, 0.2)',
             }}
-            onMouseOver={(e) => e.target.style.backgroundColor = '#6a3ac7'}
-            onMouseOut={(e) => e.target.style.backgroundColor = '#7E44EE'}
           >
             <Plus size={18} />
             Add Product
           </button>
+
+          <button
+            onClick={handleSyncShopify}
+            disabled={syncLoading}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: '#7E44EE',
+              color: 'white',
+              border: 'none',
+              borderRadius: '10px',
+              padding: '12px 24px',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: syncLoading ? 'not-allowed' : 'pointer',
+              opacity: syncLoading ? 0.7 : 1,
+              boxShadow: '0 2px 8px rgba(126, 68, 238, 0.2)',
+            }}
+          >
+            <Download size={18} />
+            {syncLoading ? 'Syncing...' : 'Sync from Shopify'}
+          </button>
+
+          <button
+            onClick={handlePushAllToShopify}
+            disabled={pushLoading}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              background: '#7E44EE',
+              color: 'white',
+              border: 'none',
+              borderRadius: '10px',
+              padding: '12px 24px',
+              fontSize: '14px',
+              fontWeight: '600',
+              cursor: pushLoading ? 'not-allowed' : 'pointer',
+              opacity: pushLoading ? 0.7 : 1,
+              boxShadow: '0 2px 8px rgba(126, 68, 238, 0.2)',
+            }}
+          >
+            <Upload size={18} />
+            {pushLoading ? 'Pushing...' : 'Push All to Shopify'}
+          </button>
         </div>
       </div>
+
+      {/* Success Message */}
+      {successMessage && (
+        <div style={{
+          backgroundColor: '#d4edda',
+          color: '#155724',
+          padding: '15px 20px',
+          borderRadius: '6px',
+          marginBottom: '20px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '10px',
+          fontSize: '14px'
+        }}>
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path d="M10 0C4.48 0 0 4.48 0 10C0 15.52 4.48 20 10 20C15.52 20 20 15.52 20 10C20 4.48 15.52 0 10 0ZM8 15L3 10L4.41 8.59L8 12.17L15.59 4.58L17 6L8 15Z" fill="#155724"/>
+          </svg>
+          {successMessage}
+        </div>
+      )}
 
       {/* Products Table */}
       <div style={{
@@ -242,7 +375,7 @@ const ProductPage = () => {
                   fontWeight: 'bold',
                   color: '#7E44EE',
                   fontSize: '14px'
-                }}>Product Name</th>
+                }}>Title</th>
                 <th style={{
                   padding: '12px 16px',
                   textAlign: 'left',
@@ -379,9 +512,33 @@ const ProductPage = () => {
                         <Edit color="#ffc107" />
                       </button>
                       {user && (user.role === 'ADMIN' || user.role === 'PARENT') && (
-                        <button onClick={() => setDeleteModal({ open: true, product })} style={{ background: 'none', border: 'none', cursor: 'pointer' }} title="Delete Product">
-                          <Trash2 color="#dc3545" />
-                        </button>
+                        <>
+                          <button onClick={() => setDeleteModal({ open: true, product })} style={{ marginRight: 8, background: 'none', border: 'none', cursor: 'pointer' }} title="Delete Product">
+                            <Trash2 color="#dc3545" />
+                          </button>
+                          <button 
+                            onClick={() => handlePushToShopify(product.id)}
+                            disabled={pushingProducts.has(product.id)}
+                            style={{
+                              background: '#7E44EE',
+                              border: 'none',
+                              borderRadius: '6px',
+                              padding: '6px 8px',
+                              cursor: pushingProducts.has(product.id) ? 'not-allowed' : 'pointer',
+                              opacity: pushingProducts.has(product.id) ? 0.7 : 1,
+                              display: 'flex',
+                              alignItems: 'center',
+                              boxShadow: '0 2px 8px rgba(126, 68, 238, 0.2)',
+                            }}
+                            title="Push to Shopify"
+                          >
+                            {pushingProducts.has(product.id) ? (
+                              <span style={{ fontSize: '12px', color: 'white' }}>Pushing...</span>
+                            ) : (
+                              <Upload color="white" size={16} />
+                            )}
+                          </button>
+                        </>
                       )}
                     </div>
                   </td>
