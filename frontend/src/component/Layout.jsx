@@ -151,6 +151,7 @@ const Layout = () => {
         { path: '/admin-users', label: 'Admin Users', icon: Shield },
         { path: '/employees', label: 'Employees', icon: Users },
         // { path: '/timesheet', label: 'Timesheet', icon: Clock },
+        { path: '/orders', label: 'Orders', icon: FolderOpen },
         { path: '/departments', label: 'Departments', icon: Building2 },
         // { path: '/projects', label: 'Projects', icon: FolderOpen },
         { path: '/company/settings', label: 'Settings', icon: Settings }

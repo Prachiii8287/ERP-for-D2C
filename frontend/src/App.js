@@ -11,6 +11,7 @@ import CompanyDashboard from './component/CompanyDashboard';
 import AdminDashboard from './component/AdminDashboard';
 import EmployeeDashboard from './component/EmployeeDashboard';
 import ProtectedRoute from './components/ProtectedRoute';
+import OrderPage from './component/OrderPage';
 
 // Import new components we'll create
 import Layout from './component/Layout';
@@ -97,9 +98,9 @@ function AppContent() {
           <Route path="admin-users" element={<AdminUsersPage />} />
           <Route path="employees" element={<EmployeesPage />} />
           <Route path="employees/new" element={<AddEmployee />} />
+          <Route path="orders" element={<OrderPage />} />
 
-
-          Departments Route (shared by Parent and Admin)
+          {/* Departments Route (shared by Parent and Admin) */}
           <Route path="departments" element={<Departments />} />
           {/* Projects Route */}
           {/* <Route path="projects" element={<ProjectsPage />} /> */}

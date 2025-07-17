@@ -56,3 +56,7 @@ htmlcov/
 # MySQL
 *.sql
 *.sqlite3 
+
+# Ignore Django migrations
+*/migrations/*
+!*/migrations/__init__.py 
