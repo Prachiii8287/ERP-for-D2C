@@ -79,8 +79,9 @@ const ProductPage = () => {
       await productsAPI.deleteProduct(productId);
       setProducts(products => products.filter(p => p.id !== productId));
       setDeleteModal({ open: false, product: null });
+      toast.success('Product deleted successfully');
     } catch (err) {
-      alert('Failed to delete product.');
+      toast.error('Failed to delete product.');
     }
   };
 

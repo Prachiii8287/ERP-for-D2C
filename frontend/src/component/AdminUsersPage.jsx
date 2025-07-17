@@ -304,6 +304,7 @@ import { Plus, Edit, Trash2, Mail, Phone, Shield, X, Eye, EyeOff } from 'lucide-
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAdminUsers, deleteAdminUser, createAdminUser } from '../store/companySlice';
 import { companyAPI } from '../services/api';
+import { toast } from 'react-toastify';
 
 const AdminUsersPage = () => {
   const navigate = useNavigate();
@@ -359,6 +360,7 @@ const AdminUsersPage = () => {
     } catch (err) {
       setOtpStatus('');
       setOtpError('Failed to send OTP.');
+      toast.error('Failed to send OTP.');
     }
   };
 
@@ -373,14 +375,26 @@ const AdminUsersPage = () => {
       dispatch(fetchAdminUsers());
     } catch (err) {
       setOtpError(err?.response?.data?.detail || 'Invalid OTP');
+      toast.error(err?.response?.data?.detail || 'Invalid OTP');
     }
   };
 
   const handleSaveEditAdmin = async () => {
-    // TODO: Implement PATCH API call for admin update
-    setShowEditModal(false);
-    setEditAdmin(null);
-    dispatch(fetchAdminUsers());
+    if (!editAdmin) return;
+    try {
+      await companyAPI.updateAdminUser(editAdmin.id, {
+        first_name: editAdmin.first_name,
+        last_name: editAdmin.last_name,
+        email: editAdmin.email,
+        phone: editAdmin.phone,
+      });
+      setShowEditModal(false);
+      setEditAdmin(null);
+      dispatch(fetchAdminUsers());
+      toast.success('Admin user updated successfully');
+    } catch (err) {
+      toast.error('Failed to update admin user');
+    }
   };
 
   // Modal handlers
@@ -469,9 +483,11 @@ const AdminUsersPage = () => {
     try {
       await dispatch(createAdminUser(payload)).unwrap();
       dispatch(fetchAdminUsers()); // Refresh list
-    handleCloseModal();
+      handleCloseModal();
+      toast.success('Admin user added successfully');
     } catch (error) {
       setFormErrors({ api: error.message || 'Failed to add admin user' });
+      toast.error(error.message || 'Failed to add admin user');
     }
   };
 
@@ -1132,7 +1148,6 @@ const AdminUsersPage = () => {
               ))}
             </div>
             <div style={{ color: '#888', fontSize: 12, marginBottom: 8 }}>For demo: use "123456"</div>
-            {otpError && <div style={{ color: 'red', marginBottom: 8 }}>{otpError}</div>}
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               <button onClick={() => setShowDeleteModal(false)} style={{ padding: '10px 20px', borderRadius: 6, border: '1px solid #ccc', background: '#fff' }}>Cancel</button>
               <button onClick={handleVerifyDelete} style={{ padding: '10px 20px', borderRadius: 6, background: '#7E44EE', color: '#fff', border: 'none' }} disabled={otp.length !== 6}>Confirm Deletion</button>

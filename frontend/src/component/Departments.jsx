@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchDepartments, createDepartment, updateDepartment, deleteDepartment } from '../store/companySlice';
+import { toast } from 'react-toastify';
 
 const Departments = () => {
   const dispatch = useDispatch();
@@ -23,13 +24,16 @@ const Departments = () => {
     e.preventDefault();
     if (!form.name.trim()) {
       setLocalError('Department name is required');
+      toast.warning('Department name is required');
       return;
     }
     try {
       if (editId) {
         await dispatch(updateDepartment({ deptId: editId, data: form })).unwrap();
+        toast.success('Department updated successfully');
       } else {
         await dispatch(createDepartment(form)).unwrap();
+        toast.success('Department added successfully');
       }
       setForm({ name: '', description: '' });
       setLocalError('');
@@ -37,6 +41,7 @@ const Departments = () => {
       setEditId(null);
     } catch (err) {
       setLocalError(err?.message || 'Failed to save department');
+      toast.error(err?.message || 'Failed to save department');
     }
   };
 
@@ -48,7 +53,12 @@ const Departments = () => {
 
   const handleDelete = async (deptId) => {
     if (window.confirm('Are you sure you want to delete this department?')) {
-      await dispatch(deleteDepartment(deptId));
+      try {
+        await dispatch(deleteDepartment(deptId));
+        toast.success('Department deleted successfully');
+      } catch (err) {
+        toast.error('Failed to delete department');
+      }
     }
   };
 

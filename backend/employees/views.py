@@ -160,6 +160,15 @@ class EmployeeListCreateView(generics.ListCreateAPIView):
         # The create logic is already handled in EmployeeCreateSerializer.create method
         serializer.save()
 
+    def create(self, request, *args, **kwargs):
+        response = super().create(request, *args, **kwargs)
+        # Fetch the full employee object with nested user
+        employee_id = response.data.get('id')
+        from .models import Employee
+        employee = Employee.objects.get(id=employee_id)
+        data = EmployeeSerializer(employee, context={'request': request}).data
+        return Response(data, status=status.HTTP_201_CREATED)
+
 class EmployeeDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Employee.objects.all()
     permission_classes = [IsAuthenticated]

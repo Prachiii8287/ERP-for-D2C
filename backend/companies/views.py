@@ -354,7 +354,7 @@ class AdminUserListCreateView(generics.ListCreateAPIView):
         else:
             raise generics.exceptions.PermissionDenied("Only company owners can create admin users.")
 
-class AdminUserDetailView(generics.RetrieveDestroyAPIView):
+class AdminUserDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = User.objects.all()
     serializer_class = AdminUserSerializer
     permission_classes = [IsAuthenticated]

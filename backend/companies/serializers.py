@@ -11,7 +11,7 @@ class CompanySerializer(serializers.ModelSerializer):
     class Meta:
         model = Company
         fields = [
-            'id', 'name', 'email', 'phone', 'address', 'city', 'state',
+            'id', 'name', 'registration_number', 'email', 'phone', 'address', 'city', 'state',
             'country', 'postal_code', 'shopify_domain', 'shopify_access_token',
             'shiprocket_email', 'shiprocket_token', 'owner',
             'employees_count', 'departments_count', 'admin_count',
@@ -120,7 +120,7 @@ class AdminUserSerializer(serializers.ModelSerializer):
         fields = [
             'id', 'email', 'first_name', 'last_name', 'phone', 'is_active', 'date_joined'
         ]
-        read_only_fields = ('id', 'email', 'first_name', 'last_name', 'phone', 'is_active', 'date_joined')
+        read_only_fields = ('id', 'email', 'is_active', 'date_joined')
 
 class AdminDeleteOTPRequestSerializer(serializers.Serializer):
     admin_user_id = serializers.UUIDField()

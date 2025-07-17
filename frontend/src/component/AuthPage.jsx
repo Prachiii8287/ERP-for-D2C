@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { login, register, clearError } from '../store/authSlice';
 import Logo from './Logo.png';
+import { toast } from 'react-toastify';
 
 const INDUSTRY_CHOICES = [
     { value: 'FASHION', label: 'Fashion & Apparel' },
@@ -41,6 +42,7 @@ export default function AuthPage() {
 
     useEffect(() => {
         if (isAuthenticated && user) {
+            localStorage.setItem('showLoginToast', '1');
             if (user.role === 'PARENT') {
                 navigate('/company-dashboard');
             } else if (user.role === 'ADMIN') {

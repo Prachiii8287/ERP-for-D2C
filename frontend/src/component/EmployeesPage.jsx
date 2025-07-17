@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { fetchEmployees, createEmployee, updateEmployee } from '../store/employeeSlice';
 import { fetchDepartments } from '../store/companySlice';
 import { companyAPI } from '../services/api';
+import { toast } from 'react-toastify';
 
 // Modal styles shared by AddEmployeeModal and EditEmployeeModal
 const modalStyles = {
@@ -230,8 +231,20 @@ const AddEmployeeModal = ({ isOpen, onClose, onEmployeeAdded }) => {
         onEmployeeAdded(result);
       }
       
+      toast.success('Employee added successfully');
       onClose();
     } catch (err) {
+      // Fallback: fetch employees and check if the new one exists
+      try {
+        const res = await dispatch(fetchEmployees()).unwrap();
+        const exists = res.some(emp => emp.user?.email === formData.email);
+        if (exists) {
+          toast.success('Employee added successfully');
+          if (onEmployeeAdded) onEmployeeAdded();
+          onClose();
+          return;
+        }
+      } catch {}
       setError(err?.message || 'Failed to create employee');
     } finally {
       setLoading(false);
@@ -536,7 +549,7 @@ const EditEmployeeModal = ({ isOpen, onClose, employee, departments, onEmployeeU
     is_active: true
   });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  // Remove error state
 
   useEffect(() => {
     if (isOpen && employee) {
@@ -549,7 +562,7 @@ const EditEmployeeModal = ({ isOpen, onClose, employee, departments, onEmployeeU
         email: employee.user?.email || '',
         is_active: employee.is_active
       });
-      setError('');
+      // No error state
     }
   }, [isOpen, employee]);
 
@@ -564,7 +577,6 @@ const EditEmployeeModal = ({ isOpen, onClose, employee, departments, onEmployeeU
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
     try {
       await dispatch(updateEmployee({
         employeeId: employee.id,
@@ -579,9 +591,10 @@ const EditEmployeeModal = ({ isOpen, onClose, employee, departments, onEmployeeU
         }
       })).unwrap();
       if (onEmployeeUpdated) onEmployeeUpdated();
+      toast.success('Employee updated successfully');
       onClose();
     } catch (err) {
-      setError(err?.message || 'Failed to update employee');
+      toast.error(err?.message || 'Failed to update employee');
     } finally {
       setLoading(false);
     }
@@ -639,7 +652,7 @@ const EditEmployeeModal = ({ isOpen, onClose, employee, departments, onEmployeeU
               <span style={{ fontSize: 15 }}>Active</span>
             </div>
           </div>
-          {error && <div style={styles.error}>{error}</div>}
+          {/* Remove: {error && <div style={styles.error}>{error}</div>} */}
           <div style={styles.buttonGroup}>
             <button type="button" onClick={onClose} style={{...styles.button, ...styles.secondaryButton}}>Cancel</button>
             <button type="submit" disabled={loading} style={{...styles.button, ...styles.primaryButton}}>{loading ? 'Saving...' : 'Save Changes'}</button>
@@ -685,6 +698,7 @@ const EmployeesPage = () => {
     console.log('Deleting employee, userId for OTP:', userId, 'employee:', employee);
     if (!userId) {
       setOtpError('Invalid employee user ID.');
+      toast.error('Invalid employee user ID.');
       return;
     }
     setDeleteEmployeeId(userId);
@@ -695,9 +709,11 @@ const EmployeesPage = () => {
     try {
       await companyAPI.sendUserDeleteOTP(userId);
       setOtpStatus('OTP sent successfully. Please check your email.');
+      toast.info('OTP sent successfully. Please check your email.');
     } catch (err) {
       setOtpStatus('');
       setOtpError('Failed to send OTP.');
+      toast.error('Failed to send OTP.');
     }
   };
 
@@ -711,8 +727,10 @@ const EmployeesPage = () => {
       setOtpStatus('');
       // Refresh employee list here instead of reloading the page
       dispatch(fetchEmployees());
+      toast.success('Employee deleted successfully!');
     } catch (err) {
       setOtpError(err?.response?.data?.detail || 'Invalid OTP');
+      toast.error('Failed to delete employee.');
     }
   };
 
@@ -902,7 +920,7 @@ const EmployeesPage = () => {
                   <td style={styles.td}>{emp.department_name}</td>
                   <td style={styles.td}>{emp.role}</td>
                   <td style={styles.td}>{emp.user?.email}</td>
-                  <td style={styles.td}>{emp.phone || 'N/A'}</td>
+                  <td style={styles.td}>{emp.user?.phone || 'N/A'}</td>
                   <td style={styles.td}>
                     <span 
                       style={{
@@ -1014,7 +1032,6 @@ const EmployeesPage = () => {
               ))}
             </div>
             <div style={{ color: '#888', fontSize: 12, marginBottom: 8 }}>For demo: use "123456"</div>
-            {otpError && <div style={{ color: 'red', marginBottom: 8 }}>{otpError}</div>}
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 16 }}>
               <button onClick={() => setShowDeleteModal(false)} style={{ padding: '10px 20px', borderRadius: 6, border: '1px solid #ccc', background: '#fff' }}>Cancel</button>
               <button onClick={handleVerifyDelete} style={{ padding: '10px 20px', borderRadius: 6, background: '#7E44EE', color: '#fff', border: 'none' }} disabled={otp.length !== 6}>Confirm Deletion</button>

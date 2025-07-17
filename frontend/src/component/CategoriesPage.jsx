@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { productsAPI } from '../services/api';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 
 const CategoriesPage = () => {
   const [categories, setCategories] = useState([]);
@@ -21,8 +22,10 @@ const CategoriesPage = () => {
       try {
         const res = await productsAPI.getCategories();
         setCategories(res.data);
+        // toast.success('Categories loaded successfully'); // Optional: uncomment for fetch success
       } catch (err) {
         setError('Failed to load categories');
+        toast.error('Failed to load categories');
       } finally {
         setLoading(false);
       }
@@ -35,8 +38,10 @@ const CategoriesPage = () => {
       try {
         if (editId) {
           await productsAPI.updateCategory(editId, { name: formData.name, description: formData.description });
+          toast.success('Category updated successfully');
         } else {
           await productsAPI.createCategory({ name: formData.name, description: formData.description });
+          toast.success('Category added successfully');
         }
         // Refresh categories from backend
         const res = await productsAPI.getCategories();
@@ -45,8 +50,10 @@ const CategoriesPage = () => {
         setEditId(null);
         setShowModal(false);
       } catch (err) {
-        alert('Failed to save category');
+        toast.error('Failed to save category');
       }
+    } else {
+      toast.warning('Category name is required');
     }
   };
 
@@ -57,8 +64,9 @@ const CategoriesPage = () => {
       const res = await productsAPI.getCategories();
       setCategories(res.data);
       setDeleteModal({ open: false, category: null });
+      toast.success('Category deleted successfully');
     } catch (err) {
-      alert('Failed to delete category');
+      toast.error('Failed to delete category');
     }
   };
 

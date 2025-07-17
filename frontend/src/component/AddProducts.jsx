@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { productsAPI } from '../services/api';
+import { toast } from 'react-toastify';
 
 const AddProducts = () => {
   const navigate = useNavigate();
@@ -83,6 +84,7 @@ const AddProducts = () => {
     setError('');
     if (!form.category.trim()) {
       setError('Category is required.');
+      toast.warning('Category is required');
       setLoading(false);
       return;
     }
@@ -91,6 +93,7 @@ const AddProducts = () => {
       const v = variants[i];
       if (!v.title || !v.sku) {
         setError(`Variant #${i + 1} is missing required fields (title and sku are required).`);
+        toast.warning(`Variant #${i + 1} is missing required fields`);
         setLoading(false);
         return;
       }
@@ -120,27 +123,15 @@ const AddProducts = () => {
       console.log('Submitting product payload:', payload);
       if (id) {
         await productsAPI.updateProduct(id, payload);
+        toast.success('Product updated successfully');
       } else {
         await productsAPI.createProduct(payload);
+        toast.success('Product added successfully');
       }
       navigate('/products');
     } catch (err) {
-      console.log('Backend error:', err.response?.data);
-      if (err.response && err.response.data) {
-        if (typeof err.response.data === 'string') {
-          setError(err.response.data);
-        } else if (typeof err.response.data === 'object') {
-          setError(
-            Object.entries(err.response.data)
-              .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
-              .join(' | ')
-          );
-        } else {
-          setError('Failed to add product. Please check your input.');
-        }
-      } else {
-        setError('Failed to add product. Please check your input.');
-      }
+      toast.error('Failed to save product');
+      setError('Failed to save product');
     } finally {
       setLoading(false);
     }

@@ -28,6 +28,8 @@ import VariantPage from './component/VariantPage';
 import CategoriesPage from './component/CategoriesPage';
 // import ProjectsPage from './component/ProjectsPage';
 // import TimesheetsPage from './component/TimesheetsPage';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 function AppContent() {
@@ -41,6 +43,13 @@ function AppContent() {
       dispatch(getCurrentUser());
     }
   }, [dispatch, user]);
+
+  useEffect(() => {
+    if (localStorage.getItem('showLoginToast')) {
+      toast.success('You are logged in successfully!');
+      localStorage.removeItem('showLoginToast');
+    }
+  }, []);
 
   if (loading) {
     return (
@@ -124,6 +133,18 @@ function AppContent() {
 function App() {
   return (
     <Provider store={store}>
+      {/* ToastContainer for global toasts */}
+      <ToastContainer
+        position="top-center"
+        autoClose={4000}
+        hideProgressBar
+        closeOnClick
+        pauseOnHover
+        draggable={false}
+        newestOnTop
+        rtl={false}
+        limit={3}
+      />
       <AppContent />
     </Provider>
   );

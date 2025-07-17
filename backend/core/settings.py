@@ -116,9 +116,9 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': os.getenv('DB_NAME', 'erp_db_1'),
+        'NAME': os.getenv('DB_NAME', 'd2c_erp'),
         'USER': os.getenv('DB_USER', 'root'),
-        'PASSWORD': os.getenv('DB_PASSWORD', 'Family@123'),
+        'PASSWORD': os.getenv('DB_PASSWORD', 'Prachi@8287'),
         'HOST': os.getenv('DB_HOST', 'localhost'),
         'PORT': os.getenv('DB_PORT', '3306'),
        

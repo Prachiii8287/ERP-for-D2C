@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { createEmployee, fetchEmployees } from '../store/employeeSlice';
 import { fetchDepartments } from '../store/companySlice';
+import { toast } from 'react-toastify';
 
 const AddEmployeeForm = () => {
   const navigate = useNavigate();
@@ -48,9 +49,11 @@ const AddEmployeeForm = () => {
         password: formData.password,
         company_id: user.company
       })).unwrap();
+      toast.success('Employee added successfully');
       navigate('/employees');
     } catch (err) {
       setError(err?.message || 'Failed to create employee');
+      toast.error(err?.message || 'Failed to create employee');
     } finally {
       setLoading(false);
     }

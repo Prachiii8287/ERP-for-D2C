@@ -8,6 +8,7 @@ import { fetchEmployees, createEmployee } from '../store/employeeSlice';
 import { fetchDepartments } from '../store/companySlice';
 import ShopifyConnectModal from './ShopifyConnectModal';
 import ShiprocketConnectModal from './ShiprocketConnectModal';
+import { toast } from 'react-toastify';
 
 const CompanyDashboard = () => {
   const navigate = useNavigate();
@@ -417,8 +418,10 @@ const CompanyDashboard = () => {
       await dispatch(createAdminUser(payload)).unwrap();
       dispatch(fetchAdminUsers());
       handleCloseModal();
+      toast.success('Admin user added successfully');
     } catch (error) {
       setFormErrors({ api: error.message || 'Failed to add admin user' });
+      toast.error(error.message || 'Failed to add admin user');
     }
   };
 
@@ -675,7 +678,7 @@ const CompanyDashboard = () => {
             </button>
 
             <button
-              onClick={() => setShowCompanyModal(true)}
+              onClick={handleUpdateSettings}
               style={{
                 ...styles.actionButton,
                 ...(hoveredButton === 'settings' ? styles.actionButtonHover : {})

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Download, Eye, RefreshCw } from 'lucide-react';
 import { useSelector } from 'react-redux';
 import api from '../services/api';
+import { toast } from 'react-toastify';
 
 const OrderPage = () => {
   const [searchQuery, setSearchQuery] = useState('');
@@ -25,6 +26,7 @@ const OrderPage = () => {
       setError(null);
     } catch (err) {
       setError('Failed to fetch orders. Please try again.');
+      toast.error('Failed to fetch orders. Please try again.');
       console.error('Error fetching orders:', err);
     } finally {
       setLoading(false);
@@ -41,8 +43,10 @@ const OrderPage = () => {
       });
       await fetchOrders();
       setError(null);
+      toast.success('Order status updated successfully');
     } catch (err) {
       setError(err.response?.data?.error || 'Failed to update order status. Please try again.');
+      toast.error(err.response?.data?.error || 'Failed to update order status. Please try again.');
       console.error('Error updating order status:', err);
     } finally {
       setUpdatingStatus(false);
@@ -56,12 +60,12 @@ const OrderPage = () => {
       setError(null); // Clear any previous errors
       const response = await api.post('/api/orders/sync_shopify_orders/');
       await fetchOrders(); // Refresh the orders list after syncing
-      alert(response.data.message || 'Successfully synced orders from Shopify!');
+      toast.success(response.data.message || 'Successfully synced orders from Shopify!');
     } catch (err) {
       const errorMessage = err.response?.data?.error || 'Failed to sync orders from Shopify. Please try again.';
       setError(errorMessage);
       console.error('Error syncing Shopify orders:', err);
-      alert(errorMessage); // Show error in alert for better visibility
+      toast.error(errorMessage);
     } finally {
       setSyncingOrders(false);
     }
@@ -74,10 +78,11 @@ const OrderPage = () => {
       await api.post(`/api/orders/${orderId}/sync_to_shiprocket/`);
       await fetchOrders();
       setError(null);
-      alert('Successfully synced with Shiprocket!');
+      toast.success('Successfully synced with Shiprocket!');
     } catch (err) {
       setError('Failed to sync with Shiprocket. Please try again.');
       console.error('Error syncing with Shiprocket:', err);
+      toast.error('Failed to sync with Shiprocket. Please try again.');
     } finally {
       setSyncingShiprocket(false);
     }
@@ -90,9 +95,11 @@ const OrderPage = () => {
       await api.post(`/api/orders/${orderId}/refresh_shipping_status/`);
       await fetchOrders();
       setError(null);
+      toast.success('Shipping status refreshed successfully');
     } catch (err) {
       setError('Failed to refresh shipping status. Please try again.');
       console.error('Error refreshing shipping status:', err);
+      toast.error('Failed to refresh shipping status. Please try again.');
     } finally {
       setRefreshingShipping(false);
     }

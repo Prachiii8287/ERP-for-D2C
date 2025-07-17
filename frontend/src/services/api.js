@@ -82,6 +82,7 @@ export const companyAPI = {
   verifyUserDeleteOTP: (target_user_id, otp) =>
     apiClient.post('/companies/api/users/verify-delete-otp/', { target_user_id, otp }),
   connectShopify: (credentials) => apiClient.post('/companies/api/connect-shopify/', credentials),
+  updateAdminUser: (userId, data) => apiClient.patch(`/companies/api/admin-users/${userId}/`, data),
 };
 
 // Employee API calls

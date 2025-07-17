@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-toastify';
 
 const EditCustomerModal = ({ customer, onClose, onSave }) => {
   const [formData, setFormData] = useState({
@@ -53,6 +54,10 @@ const EditCustomerModal = ({ customer, onClose, onSave }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!formData.first_name.trim() || !formData.email.trim()) {
+      toast.warning('First name and email are required');
+      return;
+    }
     onSave(formData);
   };
 

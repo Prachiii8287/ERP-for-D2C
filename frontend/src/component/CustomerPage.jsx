@@ -3,6 +3,7 @@ import { Search, Download, Upload, Edit } from 'lucide-react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchCustomers, syncShopifyCustomers, pushCustomerToShopify, updateCustomer, clearError, clearSyncStatus, setError, setSyncStatus } from '../store/customersSlice';
 import EditCustomerModal from './EditCustomerModal';
+import { toast } from 'react-toastify';
 
 const CustomerPage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -72,11 +73,13 @@ const formatDate = (dateString) => {
       if (result.success) {
         console.log('Sync successful, fetching updated customers...');
         await dispatch(fetchCustomers());
+        toast.success('Customers synced from Shopify successfully');
       }
     } catch (error) {
       console.error('Error syncing Shopify customers:', error);
       // Show error to user
       dispatch(setError(error.message || 'Failed to sync customers from Shopify'));
+      toast.error(error.message || 'Failed to sync customers from Shopify');
     } finally {
       setIsSyncing(false);
     }
@@ -117,12 +120,15 @@ const formatDate = (dateString) => {
       // Show success/failure message
       if (results.failed.length > 0) {
         dispatch(setError(message));
+        toast.error(message);
       } else {
         dispatch(setSyncStatus(message));
+        toast.success(message);
       }
     } catch (error) {
       console.error('Error in push all operation:', error);
       dispatch(setError('Failed to complete push all operation'));
+      toast.error('Failed to complete push all operation');
     } finally {
       setIsSyncing(false);
     }
@@ -134,8 +140,10 @@ const formatDate = (dateString) => {
       console.log(`Successfully pushed customer ${customerId} to Shopify`);
       // Refresh the customer list after pushing
       await dispatch(fetchCustomers());
+      toast.success('Customer pushed to Shopify successfully');
     } catch (error) {
       console.error(`Failed to push customer ${customerId} to Shopify:`, error);
+      toast.error('Failed to push customer to Shopify');
     }
   };
 
@@ -197,12 +205,14 @@ const formatDate = (dateString) => {
       setSelectedCustomer(null);
       // Refresh the customer list
       dispatch(fetchCustomers());
+      toast.success('Customer updated successfully');
     } catch (error) {
       console.error('Error updating customer:', error);
       if (error.response) {
         console.error('Response data:', error.response.data);
         console.error('Response status:', error.response.status);
       }
+      toast.error('Failed to update customer');
     }
   };
 
